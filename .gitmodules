@@ -10,3 +10,6 @@
 [submodule "foundry-testing/lib/openzeppelin-contracts"]
 	path = foundry-testing/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "foundry-testing/lib/chainlink-brownie-contracts"]
+	path = foundry-testing/lib/chainlink-brownie-contracts
+	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
