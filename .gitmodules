@@ -13,3 +13,6 @@
 [submodule "foundry-testing/lib/chainlink-brownie-contracts"]
 	path = foundry-testing/lib/chainlink-brownie-contracts
 	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
+[submodule "defi_staking_app/lib/forge-std"]
+	path = defi_staking_app/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
