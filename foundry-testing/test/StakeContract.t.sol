@@ -8,7 +8,7 @@ import {MockERC20} from "./mocks/MockERC20.sol";
 contract StaKeContractTest is Test {
     StakeContract public stakeContract;
     MockERC20 public token;
-//    uint256 public constant AMOUNT = 1e18;
+    //    uint256 public constant AMOUNT = 1e18;
 
     function setUp() public {
         stakeContract = new StakeContract();
