@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import {Test, console} from "forge-std/Test.sol";
 import "../src/PriceConsumerV3.sol";
 import {MockV3Aggregator} from "./mocks/MockV3Aggregator.sol";
-//import {Test} from "forge-std/src/Test.sol";
+
 
 contract PriceConsumerTest is Test {
     PriceConsumerV3 public priceConsumer;
@@ -13,7 +13,7 @@ contract PriceConsumerTest is Test {
 
     function setUp() public {
         mockV3Aggregator = new MockV3Aggregator(DECIMALS, INIT_ANSWER);
-        priceConsumer = new PriceConsumerV3(mockV3Aggregator);
+        priceConsumer = new PriceConsumerV3(address(mockV3Aggregator));
     }
 
     function testConsumerReturnsStartingValue() public {
