@@ -3,15 +3,15 @@ pragma solidity ^0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
 import {FundMe} from "../src/FundMe.sol";
+import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
-    FundMe fundMe;
-    // Fund the contract with 6 ETH (assuming ETH/USD rate is 2000)
-    //    uint256 amount = 0.1 ether;
-    uint256 ethPrice = 2000;
+    FundMe public fundMe;
 
-    function setUp() public {
-        fundMe = new FundMe();
+    function setUp() external {
+        // fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        DeployFundMe deployFundMe = new DeployFundMe();
+        fundMe = deployFundMe.run();
     }
 
     function testMinimumDollarIsFive() public {
@@ -19,10 +19,10 @@ contract FundMeTest is Test {
     }
 
     function testIsOwner() public {
-        assertEq(fundMe.getOwner(), address(this));
+        assertEq(fundMe.getOwner(), msg.sender);
     }
 
-    function testGetVersion() public {
+    function testPriceFeedVersionIsAccurate() public {
         uint256 version = fundMe.getVersion();
         assertEq(version, 4);
     }
