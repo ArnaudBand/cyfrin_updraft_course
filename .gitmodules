@@ -19,3 +19,6 @@
 [submodule "defi_staking_app/lib/openzeppelin-contracts"]
 	path = defi_staking_app/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "foundry-fund-me/lib/foundry-devops"]
+	path = foundry-fund-me/lib/foundry-devops
+	url = https://github.com/ChainAccelOrg/foundry-devops
