@@ -72,8 +72,8 @@ contract FundMe {
 
     function cheaperWithdraw() public onlyOwner {
         address[] memory funders = s_funders;
-        // mappings can't be in memory, sorry!
-        for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
+        uint256 funderLength = funders.length;
+        for (uint256 funderIndex = 0; funderIndex < funderLength; funderIndex++) {
             address funder = funders[funderIndex];
             s_addressToAmountFunded[funder] = 0;
         }
