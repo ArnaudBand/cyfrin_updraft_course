@@ -3,9 +3,10 @@ cache/
 out/
 
 # Ignores development broadcast logs
-broadcast
+!/broadcast/
 /broadcast/*/31337/
 /broadcast/**/dry-run/
+/broadcast/*/11155111/
 
 # Docs
 docs/
@@ -14,7 +15,7 @@ docs/
 .env
 
 # lib
-lib
+/lib
 
 # .idea
 /.idea
