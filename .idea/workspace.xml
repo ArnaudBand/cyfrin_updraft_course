@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e16de6e5-5a4a-432f-9d6c-f09b53a57424" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts/contracts/src/v0.4/Aggregator.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts/contracts/src/v0.4/Aggregator.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts/contracts/src/v0.4/Chainlink.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts/contracts/src/v0.4/Chainlink.sol" afterDir="false" />
@@ -882,7 +884,7 @@
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std/src/console.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std/src/console.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std/src/console2.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std/src/console2.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foundry-fund-me/script/Interactions.s.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/script/Interactions.s.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry-smart-contract-lottery/src/Raffle.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-smart-contract-lottery/src/Raffle.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts/contracts/src/v0.4/Aggregator.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts/contracts/src/v0.4/Aggregator.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts/contracts/src/v0.4/Chainlink.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts/contracts/src/v0.4/Chainlink.sol" afterDir="false" />
@@ -1225,7 +1227,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/html-fund-me-f23" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -1243,6 +1245,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Makefile Target.pl.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
@@ -1252,6 +1255,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;database.data.views.appearance&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -1259,6 +1263,19 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/foundry-testing/lib" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="pl" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="pl" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Makefile Target.pl" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -1274,7 +1291,9 @@
       <workItem from="1710747115712" duration="10328000" />
       <workItem from="1710830563570" duration="10214000" />
       <workItem from="1710845663903" duration="10167000" />
-      <workItem from="1711002219198" duration="521000" />
+      <workItem from="1711002219198" duration="16284000" />
+      <workItem from="1711030782867" duration="225000" />
+      <workItem from="1711031093499" duration="1177000" />
     </task>
     <servers />
   </component>
