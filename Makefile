@@ -1,11 +1,11 @@
-push:
+pp:
 	@git push
 
-pull:
+pl:
 	@git pull
 
 cm:
-	@git commit -m
+	@git commit
 
-add:
+a:
 	@git add ./
