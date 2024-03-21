@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e16de6e5-5a4a-432f-9d6c-f09b53a57424" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts/contracts/src/v0.4/Aggregator.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/chainlink-brownie-contracts/contracts/src/v0.4/Aggregator.sol" afterDir="false" />
@@ -1293,7 +1292,7 @@
       <workItem from="1710845663903" duration="10167000" />
       <workItem from="1711002219198" duration="16284000" />
       <workItem from="1711030782867" duration="225000" />
-      <workItem from="1711031093499" duration="1177000" />
+      <workItem from="1711031093499" duration="1806000" />
     </task>
     <servers />
   </component>

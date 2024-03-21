@@ -5,5 +5,5 @@ pl:
 	@git pull
 
 cm:
-	git add . && git commit -m "$(msg)"
+	git add . && git commit -m "$(m)"
 
