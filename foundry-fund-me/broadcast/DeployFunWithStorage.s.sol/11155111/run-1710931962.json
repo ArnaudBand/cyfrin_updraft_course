@@ -1,0 +1,38 @@
+{
+  "transactions": [
+    {
+      "hash": "0x528ca2bab805f9306ccbdd093b22826702da3cdcb681f66551e80405b7497c6f",
+      "transactionType": "CREATE",
+      "contractName": "FunWithStorage",
+      "contractAddress": "0x7868DAa387Da3aC9e876274aA2b803164769b8dF",
+      "function": null,
+      "arguments": null,
+      "transaction": {
+        "type": "0x02",
+        "from": "0x9c8a2750e8814edf52224a92bd61b4f596a94c17",
+        "gas": "0x3fd62",
+        "value": "0x0",
+        "data": "0x60a060405234801561001057600080fd5b50601960009081556001805460ff19908116821782556002805480840190915560de7f405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace9091015591805260036020527f3617319a054d772f909f7c479a2cebe5066e836a939412e32403c99029b92eff8054909216179055607b60805260805160a26100a36000396000505060a26000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063874f33a114602d575b600080fd5b60336035565b005b6000805460429060016046565b5050565b80820180821115606657634e487b7160e01b600052601160045260246000fd5b9291505056fea2646970667358221220a278c9dbab6d833e9ee8989620895e6a966b9c4b19deac03f706877c772ba97c64736f6c63430008180033",
+        "nonce": "0x22",
+        "accessList": []
+      },
+      "additionalContracts": [],
+      "isFixedGasLimit": false
+    }
+  ],
+  "receipts": [],
+  "libraries": [],
+  "pending": [
+    "0x528ca2bab805f9306ccbdd093b22826702da3cdcb681f66551e80405b7497c6f"
+  ],
+  "returns": {
+    "0": {
+      "internal_type": "contract FunWithStorage",
+      "value": "0x7868DAa387Da3aC9e876274aA2b803164769b8dF"
+    }
+  },
+  "timestamp": 1710931962,
+  "chain": 11155111,
+  "multi": false,
+  "commit": "5e04e2c"
+}

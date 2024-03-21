@@ -6,9 +6,10 @@ import {FunWithStorage} from "../src/exampleStorage/FunWithStorage.sol";
 
 contract DeployFunWithStorage is Script {
     FunWithStorage public funWithStorage;
-    function run() external returns(FunWithStorage) {
+
+    function run() external returns (FunWithStorage) {
         vm.startBroadcast();
-        funWithStorage  = new FunWithStorage();
+        funWithStorage = new FunWithStorage();
         vm.stopBroadcast();
         printStorageData(address(funWithStorage));
         printFirstArrayElement(address(funWithStorage));

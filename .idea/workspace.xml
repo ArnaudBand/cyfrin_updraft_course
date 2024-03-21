@@ -882,6 +882,7 @@
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std/src/console.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std/src/console.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std/src/console2.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/lib/forge-std/src/console2.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry-fund-me/script/Interactions.s.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-fund-me/script/Interactions.s.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts/contracts/src/v0.4/Aggregator.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts/contracts/src/v0.4/Aggregator.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts/contracts/src/v0.4/Chainlink.sol" beforeDir="false" afterPath="$PROJECT_DIR$/foundry-testing/lib/chainlink-brownie-contracts/contracts/src/v0.4/Chainlink.sol" afterDir="false" />
@@ -1224,7 +1225,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/html-fund-me-f23" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -1240,20 +1241,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/arnaud/workspace/projects/cyfrin_updraft_course",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/arnaud/workspace/projects/cyfrin_updraft_course&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/foundry-testing/lib" />
@@ -1273,6 +1274,7 @@
       <workItem from="1710747115712" duration="10328000" />
       <workItem from="1710830563570" duration="10214000" />
       <workItem from="1710845663903" duration="10167000" />
+      <workItem from="1711002219198" duration="521000" />
     </task>
     <servers />
   </component>
