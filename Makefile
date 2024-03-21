@@ -1,5 +1,3 @@
-.PHONY: commit
-
 pp:
 	@git push
 
