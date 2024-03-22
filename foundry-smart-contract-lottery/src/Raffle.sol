@@ -5,7 +5,10 @@ import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interface
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 /**
- * @title A simple Raffle Contract * @author Arnaud * @notice This contract is for creating a sample raffle * @dev Implements Chainlink VRFv2
+ * @title A sample Raffle Contract
+ * @author Arnaud
+ * @notice This contract is for creating a sample raffle
+ * @dev Implements Chainlink VRFv2
  */
 contract Raffle is VRFConsumerBaseV2 {
     error Raffle__NotEnoughEthSent();
@@ -103,5 +106,9 @@ contract Raffle is VRFConsumerBaseV2 {
      */
     function getEntranceFee() external view returns (uint256) {
         return i_entranceFee;
+    }
+
+    function getRaffleState() external view returns (RaffleState) {
+        return s_raffleState;
     }
 }
