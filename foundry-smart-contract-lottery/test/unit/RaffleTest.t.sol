@@ -25,6 +25,7 @@ contract RaffleTest is Test {
         (raffle, helperConfig) = deployer.run();
         (entranceFee, interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit) =
             helperConfig.activeNetworkConfig();
+        vm.deal(PLAYER, STARTING_USER_BALANCE);
     }
 
     function testRaffleInitializeInOpenState() public view {
@@ -39,5 +40,12 @@ contract RaffleTest is Test {
         vm.prank(PLAYER);
         vm.expectRevert(Raffle.Raffle__NotEnoughEthSent.selector);
         raffle.enterRaffle();
+    }
+
+    function testRaffleRecordsPlayerWhenTheyEnter() public {
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: entranceFee}();
+        address playerRecorded = raffle.getPlayer(0);
+        assert(playerRecorded == PLAYER);
     }
 }
