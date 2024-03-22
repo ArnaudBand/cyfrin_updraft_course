@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
+import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
 
 contract HelperConfig is Script {
     struct NetworkConfig {
@@ -23,7 +24,7 @@ contract HelperConfig is Script {
         }
     }
 
-    function getSepoliaEthConfig() public view returns (NetworkConfig memory) {
+    function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
         return NetworkConfig({
             entranceFee: 0.01 ether,
             interval: 30,
@@ -38,5 +39,21 @@ contract HelperConfig is Script {
         if(activeNetworkConfig.vrfCoordinator != address(0)) {
             return activeNetworkConfig;
         }
+
+        uint96 baseFee = 0.25 ether;
+        uint96 gasPriceLink = 1e9;
+
+        vm.startBroadcast();
+        VRFCoordinatorV2Mock vrfCoordinatorMock = new VRFCoordinatorV2Mock(baseFee, gasPriceLink);
+        vm.stopBroadcast();
+
+        return NetworkConfig({
+            entranceFee: 0.01 ether,
+            interval: 30,
+            vrfCoordinator: address(vrfCoordinatorMock),
+            gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
+            subscriptionId: 0, // Update this our subscriptionId!
+            callbackGasLimit: 500000 // gas!!!
+        });
     }
 }
