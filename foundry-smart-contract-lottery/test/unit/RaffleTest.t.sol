@@ -31,7 +31,6 @@ contract RaffleTest is Test {
         assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
     }
 
-
     ////////////////////
     /// ENTER RAFFLE ///
     ///////////////////
