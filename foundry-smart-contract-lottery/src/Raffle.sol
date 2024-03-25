@@ -21,14 +21,26 @@ contract Raffle is VRFConsumerBaseV2 {
         CALCULATING
     }
 
+    //////////////////////
+    // PRIVATE CONSTANT //
+    /////////////////////
+
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
+
+    //////////////////////////
+    /// PRIVATE IMMUTABLE ///
+    ////////////////////////
     uint256 private immutable i_entranceFee;
     uint256 private immutable i_interval;
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
     bytes32 private immutable i_gasLane;
     uint64 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
+
+    //////////////////////
+    // PRIVATE STORAGE //
+    ////////////////////
     uint256 private s_lastTimeStamp;
     address payable[] private s_players;
     address private s_recentWinner;
