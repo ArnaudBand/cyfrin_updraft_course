@@ -21,11 +21,13 @@ contract DeployRaffle is Script {
 
         if (subscriptionId == 0) {
             CreateSubscription createSubscription = new CreateSubscription();
-            subscriptionId = createSubscription.createSubscription(vrfCoordinator);
+            (subscriptionId, vrfCoordinator) = createSubscription.createSubscription(vrfCoordinator);
         }
 
         vm.startBroadcast();
-        Raffle raffle = new Raffle(entranceFee, interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit);
+        Raffle raffle = new Raffle(
+            entranceFee, interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit
+        );
         vm.stopBroadcast();
         return (raffle, helperConfig);
     }
