@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {Script, console} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
-import {LinkToken} from "../../test/mocks/LinkToken.sol";
+import {LinkToken} from "../test/mocks/LinkToken.sol";
 
 contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint64) {
