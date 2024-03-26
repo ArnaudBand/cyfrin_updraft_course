@@ -24,9 +24,7 @@ contract DeployRaffle is Script {
             subscriptionId = createSubscription.createSubscription(vrfCoordinator);
 
             FundSubscription fundSub = new FundSubscription();
-            fundSub.fundSubscription(
-            vrfCoordinator, subscriptionId, link
-            );
+            fundSub.fundSubscription(vrfCoordinator, subscriptionId, link);
         }
 
         vm.startBroadcast();
