@@ -21,13 +21,13 @@ contract ManualToken {
     }
 
     function balanceOf(address _owner) public view returns(uint256 balance) {
-        return s_balances[owner];
+        return s_balances[_owner];
     }
 
     function transfer(address _to, uint256 amount) public {
        uint256 previousBalance = balanceOf(msg.sender) + balanceOf(_to);
         s_balances[msg.sender] -= amount;
         s_balances[_to] += amount;
-        require(balanceOf(msg.sender) + balanceOt(_to) == previousBalance);
+        require(balanceOf(msg.sender) + balanceOf(_to) == previousBalance);
     }
 }
