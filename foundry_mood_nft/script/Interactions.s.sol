@@ -6,12 +6,11 @@ import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 import {DogeNFT} from "../src/DogeNFT.sol";
 
 contract MintDogeNFT is Script {
-
-        string public constant PUG_URI =
+    string public constant PUG_URI =
         "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
+
     function run() external {
-        address mostRecentlyDeployedDogieNft = DevOpsTools
-            .get_most_recent_deployment("DOGIE", block.chainid);
+        address mostRecentlyDeployedDogieNft = DevOpsTools.get_most_recent_deployment("DogeNFT", block.chainid);
         mintNftOnContract(mostRecentlyDeployedDogieNft);
     }
 
