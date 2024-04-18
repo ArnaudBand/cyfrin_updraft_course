@@ -7,16 +7,17 @@ import {DogeNFT} from "../src/DogeNFT.sol";
 
 contract MintDogeNFT is Script {
 
-        string public constant PUG =
+        string public constant PUG_URI =
         "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
     function run() external {
-        address mostRecentDeployed = DevOpsTools.get_most_recent_deployment("DOGIE", block.chainid);
-        mintNFtOncontract(mostRecentDeployed);
+        address mostRecentlyDeployedDogieNft = DevOpsTools
+            .get_most_recent_deployment("DOGIE", block.chainid);
+        mintNftOnContract(mostRecentlyDeployedDogieNft);
     }
 
-    function mintNFtOncontract(address contractAddress) public {
+    function mintNftOnContract(address dogieNftAddress) public {
         vm.startBroadcast();
-        DogeNFT(contractAddress).mintNFT(PUG);
+        DogeNFT(dogieNftAddress).mintNFT(PUG_URI);
         vm.stopBroadcast();
     }
 }
