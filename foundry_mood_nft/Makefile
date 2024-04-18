@@ -71,5 +71,5 @@ deploy:
 	@forge script script/DeployDogeNFT.s.sol:DeployDogeNFT $(NETWORK_ARGS)
 
 mint:
-	@forge script script/Interactions.s.sol:MintDogeNFT $(NETWORK_ARGS)
+	@forge script script/Interactions.s.sol:MintDogeNFT ${NETWORK_ARGS}
 
