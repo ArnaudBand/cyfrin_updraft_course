@@ -1,6 +1,6 @@
 -include .env
 
-.PHONY: all test clean deploy fund help install snapshot format anvil
+.PHONY: all test clean deploy fund help install snapshot format anvil deployMood
 
 DEFAULT_ANVIL_KEY := 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
@@ -75,4 +75,7 @@ mint:
 
 deployMood:
 	@forge script script/DeployMoodNFT.s.sol:DeployMoodNFT $(NETWORK_ARGS)
+
+mintMood:
+	cast send 0x9C8A2750E8814eDF52224a92bD61B4F596a94c17 "mintNFT()"
 
