@@ -8,8 +8,8 @@ fs_permissions = [
     { access = "read", path = "./broadcast" },
 ]
 
-remappings = ['@openzeppelin/contracts=lib/openzeppelin-contracts/contracts']
+remappings = ['@openzeppelin/contracts=lib/openzeppelin-contracts/contracts', 'forge-std=lib/forge-std/src']
 
-solc_version = '0.8.19'
+solc_version = '0.8.24'
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
