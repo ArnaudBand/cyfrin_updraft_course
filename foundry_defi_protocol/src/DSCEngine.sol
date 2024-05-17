@@ -32,6 +32,7 @@ contract DSCEngine is ReentrancyGuard {
     // State variables
     mapping(address token => address priceFeed) private s_PriceFeeds;
     mapping(address user => mapping(address token => uint256 amount)) private s_collateralDeposited;
+    mapping(address user => uint256 amountDSCMinted) private s_DSCMinted;
 
     // Immutables
     DecentralizedStableCoin private immutable i_dsc;
@@ -61,6 +62,8 @@ contract DSCEngine is ReentrancyGuard {
         i_dsc = DecentralizedStableCoin(dscAddress);
     }
 
+    // External functions
+
     /*
      * @notice Deposit collateral into the system
      * @param tokenCollateralAddress The address of the collateral token
@@ -77,4 +80,40 @@ contract DSCEngine is ReentrancyGuard {
         bool success = IERC20(tokenCollateralAddress).transferFrom(msg.sender, address(this), _amountCollateral);
         if (!success) revert DSCEngine__TransferFailed();
     }
+
+    /**
+     * @notice Mint DSC token
+     * @param amountDscToMint The amount of DSC to mint
+     */
+    function mintDCS(uint256 amountDscToMint) external moreThanZero(amountDscToMint) nonReentrant {
+        s_DSCMinted[msg.sender] += amountDscToMint;
+        // Revert if health factor is broken
+    }
+
+    // Internal functions
+
+    function _getAccountInfo(address user)
+        private
+        view
+        returns (uint256 totalDSCMinted, uint256 collateralValueInUsd)
+    {
+        totalDSCMinted = s_DSCMinted[user];
+        collateralValueInUsd = getAccountCallateralValue(user);
+    }
+
+    /**
+     * Returns how close to liquidate a user is
+     * If a user goes below 1, then they can get liquidated
+     */
+    function _healthFactor(address user) private view returns (uint256) {
+        (uint256 totalDSCMinted, uint256 collateralValueInUsd) = _getAccountInfo(user);
+    }
+
+    function _revertIfHealthFactorIsBroken(address user) internal view {
+        // 1. Check health factor (Don't have enough collateral?)
+        // 2. Revert if they don't
+    }
+
+    // Public & external View Functions
+    function getAccountCallateralValue(address user) public view returns (uint256) {}
 }
