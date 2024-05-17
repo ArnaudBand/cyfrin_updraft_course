@@ -23,17 +23,21 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/Ag
  * for minting and redeeming DSC, as well as depositing and withdrawing collateral.
  * @notice This contract is based on the MakerDAO DSS system
  */
+
 contract DSCEngine is ReentrancyGuard {
     // errors
     error DSCEngine__NeedsMoreThanZero();
     error DSCEngine__TokenAddressesAndPriceFeedAddressesMustBeSameLength();
     error DSCEngine_NotAllowedToken();
     error DSCEngine__TransferFailed();
+    error DSCEngine__BreaksHealthFactor(uint256 healthFactor);
 
     // State variables
 
     uint256 private constant ADDITIONAL_FEED_PRECISION = 1e10;
     uint256 private constant PRECISION = 1e18;
+    uint256 private constant LIQUIDATION_THRESHOLD = 50;
+    uint256 private constant LIQUIDATION_PRECISION = 100;
 
     mapping(address token => address priceFeed) private s_PriceFeeds;
     mapping(address user => mapping(address token => uint256 amount)) private s_collateralDeposited;
@@ -115,11 +119,13 @@ contract DSCEngine is ReentrancyGuard {
      */
     function _healthFactor(address user) private view returns (uint256) {
         (uint256 totalDSCMinted, uint256 collateralValueInUsd) = _getAccountInfo(user);
+        uint256 collateralAdjustedForThresHold = (collateralValueInUsd * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
+        return (collateralAdjustedForThresHold * PRECISION) / totalDSCMinted;
     }
 
     function _revertIfHealthFactorIsBroken(address user) internal view {
-        // 1. Check health factor (Don't have enough collateral?)
-        // 2. Revert if they don't
+        uint256 userHealthFactor = _healthFactor(user);
+        if (userHealthFactor < PRECISION) revert DSCEngine__BreaksHealthFactor(userHealthFactor);
     }
 
     // Public & external View Functions
