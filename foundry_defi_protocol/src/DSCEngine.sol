@@ -2,6 +2,8 @@
 pragma solidity ^0.8.19;
 
 import {DecentralizedStableCoin} from "./DecentralizedStableCoin.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title DSC Engine
@@ -20,17 +22,21 @@ import {DecentralizedStableCoin} from "./DecentralizedStableCoin.sol";
  * for minting and redeeming DSC, as well as depositing and withdrawing collateral.
  * @notice This contract is based on the MakerDAO DSS system
  */
-contract DSCEngine {
+contract DSCEngine is ReentrancyGuard {
     // errors
     error DSCEngine__NeedsMoreThanZero();
     error DSCEngine__TokenAddressesAndPriceFeedAddressesMustBeSameLength();
     error DSCEngine_NotAllowedToken();
+    error DSCEngine__TransferFailed();
 
     // State variables
     mapping(address token => address priceFeed) private s_PriceFeeds;
+    mapping(address user => mapping(address token => uint256 amount)) private s_collateralDeposited;
 
     // Immutables
     DecentralizedStableCoin private immutable i_dsc;
+
+    event CollateralDeposited(address indexed user, address indexed token, uint256 indexed amount);
 
     // modifier
     modifier moreThanZero(uint256 _amount) {
@@ -49,7 +55,7 @@ contract DSCEngine {
         }
 
         for (uint256 i = 0; i < tokenAddresses.length; i++) {
-          s_PriceFeeds[tokenAddresses[i]] = priceFeedAddresses[i];
+            s_PriceFeeds[tokenAddresses[i]] = priceFeedAddresses[i];
         }
 
         i_dsc = DecentralizedStableCoin(dscAddress);
@@ -64,6 +70,11 @@ contract DSCEngine {
         external
         moreThanZero(_amountCollateral)
         isAllowedToken(tokenCollateralAddress)
-        
-    {}
+        nonReentrant
+    {
+        s_collateralDeposited[msg.sender][tokenCollateralAddress] += _amountCollateral;
+        emit CollateralDeposited(msg.sender, tokenCollateralAddress, _amountCollateral);
+        bool success = IERC20(tokenCollateralAddress).transferFrom(msg.sender, address(this), _amountCollateral);
+        if (!success) revert DSCEngine__TransferFailed();
+    }
 }
