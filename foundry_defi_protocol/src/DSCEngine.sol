@@ -110,8 +110,16 @@ contract DSCEngine is ReentrancyGuard {
         if (!success) revert DSCEngine__TransferFailed();
     }
 
+    /**
+     * @notice Redeem collateral from the system
+     * @param tokenCollateralAddress The address of the collateral token
+     * @param amountCollateral The amount of collateral to redeem
+     * @dev This function is a convenience function to redeem collateral and burn DSC in one transaction
+     * DRY: Don't Repeat Yourself
+     * CEI: Check, Effects, Interactions
+     */
     function redeemCollateral(address tokenCollateralAddress, uint256 amountCollateral)
-        external
+        public
         moreThanZero(amountCollateral)
         nonReentrant
     {
@@ -119,6 +127,21 @@ contract DSCEngine is ReentrancyGuard {
         emit CollateralRedeemed(msg.sender, tokenCollateralAddress, amountCollateral);
         bool success = IERC20(tokenCollateralAddress).transfer(msg.sender, amountCollateral);
         if (!success) revert DSCEngine__TransferFailed();
+        _revertIfHealthFactorIsBroken(msg.sender);
+    }
+
+    /**
+     * @notice Redeem collateral and burn DSC
+     * @param tokenCollateralAddress The address of the collateral token
+     * @param amountCollateral The amount of collateral to redeem
+     * @param amountDscToBurn The amount of DSC to burn
+     * @dev This function is a convenience function to redeem collateral and burn DSC in one transaction
+     */
+    function redeemCollateralForDsc(address tokenCollateralAddress, uint256 amountCollateral, uint256 amountDscToBurn)
+        external
+    {
+        burnDsc(amountDscToBurn);
+        redeemCollateral(tokenCollateralAddress, amountCollateral);
     }
 
     /**
@@ -131,6 +154,14 @@ contract DSCEngine is ReentrancyGuard {
         _revertIfHealthFactorIsBroken(msg.sender);
         bool minted = i_dsc.mint(msg.sender, amountDscToMint);
         if (!minted) revert DSCEngine__MintedFailed();
+    }
+
+    function burnDsc(uint256 _amount) public moreThanZero(_amount) {
+        s_DSCMinted[msg.sender] -= _amount;
+        bool success = i_dsc.transferFrom(msg.sender, address(this), _amount);
+        if (!success) revert DSCEngine__TransferFailed();
+        i_dsc.burn(_amount);
+        _revertIfHealthFactorIsBroken(msg.sender);
     }
 
     // Internal functions
