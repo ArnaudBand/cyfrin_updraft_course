@@ -23,7 +23,6 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/Ag
  * for minting and redeeming DSC, as well as depositing and withdrawing collateral.
  * @notice This contract is based on the MakerDAO DSS system
  */
-
 contract DSCEngine is ReentrancyGuard {
     // errors
     error DSCEngine__NeedsMoreThanZero();
@@ -113,7 +112,7 @@ contract DSCEngine is ReentrancyGuard {
         returns (uint256 totalDSCMinted, uint256 collateralValueInUsd)
     {
         totalDSCMinted = s_DSCMinted[user];
-        collateralValueInUsd = getAccountCallateralValue(user);
+        collateralValueInUsd = getAccountCollateralValue(user);
     }
 
     /**
@@ -132,18 +131,22 @@ contract DSCEngine is ReentrancyGuard {
     }
 
     // Public & external View Functions
-    function getAccountCallateralValue(address user) public view returns (uint256 totalCollateralValueInUsd) {
+    function getAccountCollateralValue(address user) public view returns (uint256 totalCollateralValueInUsd) {
         for (uint256 i = 0; i < s_collateralTokens.length; i++) {
             address token = s_collateralTokens[i];
             uint256 amount = s_collateralDeposited[user][token];
-            totalCollateralValueInUsd += getUsdValue(token, amount);
+            totalCollateralValueInUsd += _getUsdValue(token, amount);
         }
         return totalCollateralValueInUsd;
     }
 
-    function getUsdValue(address token, uint256 _amount) public view returns (uint256) {
+    function _getUsdValue(address token, uint256 _amount) private view returns (uint256) {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(s_PriceFeeds[token]);
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+        (, int256 price,,,) = priceFeed.latestRoundData();
         return ((uint256(price) * ADDITIONAL_FEED_PRECISION) * _amount) / PRECISION;
+    }
+
+    function getUsdValue(address token, uint256 _amount) external view returns (uint256) {
+        return _getUsdValue(token, _amount);
     }
 }
