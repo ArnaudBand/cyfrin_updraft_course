@@ -20,12 +20,14 @@ contract DSCEngineTest is Test {
     uint256 public deployerKey;
 
     address public USER = makeAddr("user");
-    uint256 public AMOUNT_COLLATERAL = 1000e18;
+    uint256 public constant AMOUNT_COLLATERAL = 10e18;
+    uint256 public constant STARTING_ERC20_BALANCE = 10e18;
 
     function setUp() public {
         DeployDSC deployer = new DeployDSC();
         (dsc, engine, config) = deployer.run();
         (ethUsdPriceFeed, , weth, , deployerKey) = config.activeNetworkConfig();
+        ERC20Mock(weth).mint(USER, STARTING_ERC20_BALANCE);
     }
 
     function testGetUsdValue() public view {
