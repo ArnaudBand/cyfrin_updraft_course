@@ -47,7 +47,9 @@ contract DSCEngine is ReentrancyGuard {
     // Immutables
     DecentralizedStableCoin private immutable i_dsc;
 
+    // Events
     event CollateralDeposited(address indexed user, address indexed token, uint256 indexed amount);
+    event CollateralRedeemed(address indexed user, address indexed token, uint256 indexed amount);
 
     // modifier
     modifier moreThanZero(uint256 _amount) {
@@ -75,13 +77,29 @@ contract DSCEngine is ReentrancyGuard {
 
     // External functions
 
+    /**
+     * @notice Deposit collateral and mint DSC
+     * @param tokenCollateralAddress The address of the collateral token
+     * @param _amountCollateral The amount of collateral to deposit
+     * @param amountDscToMint The amount of DSC to mint
+     * @dev This function is a convenience function to deposit collateral and mint DSC in one transaction
+     */
+    function depositCollateralAndMintDsc(
+        address tokenCollateralAddress,
+        uint256 _amountCollateral,
+        uint256 amountDscToMint
+    ) external {
+        depositCollateral(tokenCollateralAddress, _amountCollateral);
+        mintDCS(amountDscToMint);
+    }
+
     /*
      * @notice Deposit collateral into the system
      * @param tokenCollateralAddress The address of the collateral token
      * @param _amount The amount of collateral to deposit
      */
     function depositCollateral(address tokenCollateralAddress, uint256 _amountCollateral)
-        external
+        public
         moreThanZero(_amountCollateral)
         isAllowedToken(tokenCollateralAddress)
         nonReentrant
@@ -92,11 +110,22 @@ contract DSCEngine is ReentrancyGuard {
         if (!success) revert DSCEngine__TransferFailed();
     }
 
+    function redeemCollateral(address tokenCollateralAddress, uint256 amountCollateral)
+        external
+        moreThanZero(amountCollateral)
+        nonReentrant
+    {
+        s_collateralDeposited[msg.sender][tokenCollateralAddress] -= amountCollateral;
+        emit CollateralRedeemed(msg.sender, tokenCollateralAddress, amountCollateral);
+        bool success = IERC20(tokenCollateralAddress).transfer(msg.sender, amountCollateral);
+        if (!success) revert DSCEngine__TransferFailed();
+    }
+
     /**
      * @notice Mint DSC token
      * @param amountDscToMint The amount of DSC to mint
      */
-    function mintDCS(uint256 amountDscToMint) external moreThanZero(amountDscToMint) nonReentrant {
+    function mintDCS(uint256 amountDscToMint) public moreThanZero(amountDscToMint) nonReentrant {
         s_DSCMinted[msg.sender] += amountDscToMint;
         // Revert if health factor is broken
         _revertIfHealthFactorIsBroken(msg.sender);
