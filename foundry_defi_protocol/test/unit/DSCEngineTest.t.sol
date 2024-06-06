@@ -6,6 +6,7 @@ import {DeployDSC} from "../../script/DeployDSC.s.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {DecentralizedStableCoin} from "../../src/DecentralizedStableCoin.sol";
 import {DSCEngine} from "../../src/DSCEngine.sol";
+import {ERC20Mock} from "../mocks/ERC20Mock.sol";
 
 contract DSCEngineTest is Test {
     DecentralizedStableCoin dsc;
@@ -17,6 +18,9 @@ contract DSCEngineTest is Test {
     address public weth;
     address public wbtc;
     uint256 public deployerKey;
+
+    address public USER = makeAddr("user");
+    uint256 public AMOUNT_COLLATERAL = 1000e18;
 
     function setUp() public {
         DeployDSC deployer = new DeployDSC();
@@ -31,5 +35,14 @@ contract DSCEngineTest is Test {
         uint256 usdValue = engine.getUsdValue(weth, ethAmount);
         console.log(usdValue);
         assertEq(usdValue, expectedUsd);
+    }
+
+    function testRevertIfCollateralZero() public {
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+
+        vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
+        engine.depositCollateral(weth, 0);
+        vm.stopPrank();
     }
 }
