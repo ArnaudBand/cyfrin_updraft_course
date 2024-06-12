@@ -96,7 +96,7 @@ contract DSCEngine is ReentrancyGuard {
         uint256 amountDscToMint
     ) external {
         depositCollateral(tokenCollateralAddress, _amountCollateral);
-        mintDCS(amountDscToMint);
+        mintDsc(amountDscToMint);
     }
 
     /*
@@ -151,7 +151,7 @@ contract DSCEngine is ReentrancyGuard {
      * @notice Mint DSC token
      * @param amountDscToMint The amount of DSC to mint
      */
-    function mintDCS(uint256 amountDscToMint) public moreThanZero(amountDscToMint) nonReentrant {
+    function mintDsc(uint256 amountDscToMint) public moreThanZero(amountDscToMint) nonReentrant {
         s_DSCMinted[msg.sender] += amountDscToMint;
         // Revert if health factor is broken
         _revertIfHealthFactorIsBroken(msg.sender);
@@ -209,16 +209,6 @@ contract DSCEngine is ReentrancyGuard {
         collateralValueInUsd = getAccountCollateralValue(user);
     }
 
-    /**
-     * Returns how close to liquidate a user is
-     * If a user goes below 1, then they can get liquidated
-     */
-    function _healthFactor(address user) private view returns (uint256) {
-        (uint256 totalDSCMinted, uint256 collateralValueInUsd) = _getAccountInfo(user);
-        uint256 collateralAdjustedForThresHold = (collateralValueInUsd * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
-        return (collateralAdjustedForThresHold * PRECISION) / totalDSCMinted;
-    }
-
     function _revertIfHealthFactorIsBroken(address user) internal view {
         uint256 userHealthFactor = _healthFactor(user);
         if (userHealthFactor < PRECISION) revert DSCEngine__BreaksHealthFactor(userHealthFactor);
@@ -250,6 +240,16 @@ contract DSCEngine is ReentrancyGuard {
     }
 
     // Private & Internal view functions
+
+        /**
+     * Returns how close to liquidate a user is
+     * If a user goes below 1, then they can get liquidated
+     */
+    function _healthFactor(address user) private view returns (uint256) {
+        (uint256 totalDSCMinted, uint256 collateralValueInUsd) = _getAccountInfo(user);
+        uint256 collateralAdjustedForThresHold = (collateralValueInUsd * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
+        return (collateralAdjustedForThresHold * PRECISION) / totalDSCMinted;
+    }
 
     function _getUsdValue(address token, uint256 _amount) private view returns (uint256) {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(s_PriceFeeds[token]);
