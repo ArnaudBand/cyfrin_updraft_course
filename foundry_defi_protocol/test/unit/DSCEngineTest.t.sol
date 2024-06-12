@@ -7,6 +7,7 @@ import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {DecentralizedStableCoin} from "../../src/DecentralizedStableCoin.sol";
 import {DSCEngine} from "../../src/DSCEngine.sol";
 import {ERC20Mock} from "../mocks/ERC20Mock.sol";
+import {MockV3Aggregator} from "../mocks/MockV3Aggregator.sol";
 
 contract DSCEngineTest is Test {
     DecentralizedStableCoin dsc;
@@ -22,7 +23,7 @@ contract DSCEngineTest is Test {
     address public USER = makeAddr("user");
     uint256 public constant AMOUNT_COLLATERAL = 10e18;
     uint256 public constant STARTING_ERC20_BALANCE = 10e18;
-
+    uint256 public constant AMOUNT_TO_MINT = 10 ether;
     function setUp() public {
         DeployDSC deployer = new DeployDSC();
         (dsc, engine, config) = deployer.run();
@@ -79,8 +80,8 @@ contract DSCEngineTest is Test {
         vm.startPrank(USER);
         ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
         engine.depositCollateral(weth, AMOUNT_COLLATERAL);
-        _;
         vm.stopPrank();
+        _;
     }
 
     function testCanDepositCollateralAndGetAcountInfo() public depositedCollateral {
@@ -89,5 +90,15 @@ contract DSCEngineTest is Test {
         uint256 expectedDepositAmount = engine.getTokenAmountFromUsd(weth, collateralValueInUsd);
         assertEq(totalDscMinted, expectTotalMintedDsc);
         assertEq(AMOUNT_COLLATERAL, expectedDepositAmount);
+    }
+
+    function testCanMintWithDepositedCollateral() public depositedCollateral {
+        uint256 balance = dsc.balanceOf(USER);
+        assertEq(balance, 0);
+    }
+
+    function testRevertMintDscIfAmountIsZero() public depositedCollateral {
+        vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
+        engine.mintDsc(0);
     }
 }
