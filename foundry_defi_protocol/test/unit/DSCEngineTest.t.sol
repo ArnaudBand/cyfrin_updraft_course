@@ -92,6 +92,14 @@ contract DSCEngineTest is Test {
         assertEq(AMOUNT_COLLATERAL, expectedDepositAmount);
     }
 
+    function testCanMintDsc() public depositedCollateral {
+        vm.prank(USER);
+        engine.mintDsc(AMOUNT_TO_MINT);
+
+        uint256 balance = dsc.balanceOf(USER);
+        assertEq(balance, AMOUNT_TO_MINT);
+    }
+
     function testCanMintWithDepositedCollateral() public depositedCollateral {
         uint256 balance = dsc.balanceOf(USER);
         assertEq(balance, 0);
@@ -100,5 +108,19 @@ contract DSCEngineTest is Test {
     function testRevertMintDscIfAmountIsZero() public depositedCollateral {
         vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
         engine.mintDsc(0);
+    }
+
+    modifier depositedCollateralAndMintedDsc() {
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+        engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
+        vm.stopPrank();
+        _;
+        
+    }
+
+    function testCanMintWithDepositedCollateralAndCheckBalance() public depositedCollateralAndMintedDsc {
+        uint256 balance = dsc.balanceOf(USER);
+        assertEq(balance, AMOUNT_TO_MINT);
     }
 }
