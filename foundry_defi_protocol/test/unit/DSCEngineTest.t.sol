@@ -74,4 +74,12 @@ contract DSCEngineTest is Test {
         engine.depositCollateral(address(rand), AMOUNT_COLLATERAL);
         vm.stopPrank();
     }
+
+    modifier depositedCollateral() {
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+        engine.depositCollateral(weth, AMOUNT_COLLATERAL);
+        _;
+        vm.stopPrank();
+    }
 }
