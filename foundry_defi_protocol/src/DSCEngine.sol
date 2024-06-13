@@ -297,8 +297,7 @@ contract DSCEngine is ReentrancyGuard {
      */
     function _healthFactor(address user) private view returns (uint256) {
         (uint256 totalDSCMinted, uint256 collateralValueInUsd) = _getAccountInfo(user);
-        uint256 collateralAdjustedForThresHold = (collateralValueInUsd * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
-        return (collateralAdjustedForThresHold * PRECISION) / totalDSCMinted;
+        return _calculateHealthFactor(totalDSCMinted, collateralValueInUsd);
     }
 
     function _getUsdValue(address token, uint256 _amount) private view returns (uint256) {
