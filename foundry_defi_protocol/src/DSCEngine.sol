@@ -214,6 +214,12 @@ contract DSCEngine is ReentrancyGuard {
         if (userHealthFactor < PRECISION) revert DSCEngine__BreaksHealthFactor(userHealthFactor);
     }
 
+    function _calculateHealthFactor(uint256 totalDscMinted, uint256 collateralValueInUsd) internal pure returns (uint256) {
+        if (totalDscMinted == 0) return type(uint256).max;
+        uint256 collateralAdjustedForThresHold = (collateralValueInUsd * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
+        return (collateralAdjustedForThresHold * PRECISION) / totalDscMinted;
+    }
+
     // Public & external View Functions
 
     function getTokenAmountFromUsd(address token, uint256 _usdAmountInWei) public view returns (uint256) {
@@ -237,6 +243,10 @@ contract DSCEngine is ReentrancyGuard {
 
     function getAccountInfo(address user) external view returns (uint256 totalDSCMinted, uint256 collateralValueInUsd) {
         (totalDSCMinted, collateralValueInUsd) = _getAccountInfo(user);
+    }
+
+    function calculateHealthFactor(uint256 totalDscMinted, uint256 collateralValueInUsd) external pure returns (uint256) {
+        return _calculateHealthFactor(totalDscMinted, collateralValueInUsd);
     }
 
     // Private & Internal view functions
