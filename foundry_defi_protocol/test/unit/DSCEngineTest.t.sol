@@ -28,7 +28,7 @@ contract DSCEngineTest is Test {
     function setUp() public {
         DeployDSC deployer = new DeployDSC();
         (dsc, engine, config) = deployer.run();
-        (ethUsdPriceFeed, btcUsdPriceFeed, weth,, deployerKey) = config.activeNetworkConfig();
+        (ethUsdPriceFeed, btcUsdPriceFeed, weth, wbtc, deployerKey) = config.activeNetworkConfig();
         ERC20Mock(weth).mint(USER, STARTING_ERC20_BALANCE);
     }
 
@@ -184,5 +184,15 @@ contract DSCEngineTest is Test {
      MockV3Aggregator(ethUsdPriceFeed).updateAnswer(updateEthPriceInUsd);
     uint256 healthFactor = engine.getHealthFactor(USER);
     assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
+  }
+
+  function testGetCollateralTokens() public view {
+    address[] memory collateralTokens = engine.getCollateralTokens();
+    assertEq(collateralTokens[0], weth);
+  }
+
+  function testGetCollateralTokensLength() public view {
+    address[] memory collateralTokens = engine.getCollateralTokens();
+    assertEq(collateralTokens.length, 2);
   }
 }
