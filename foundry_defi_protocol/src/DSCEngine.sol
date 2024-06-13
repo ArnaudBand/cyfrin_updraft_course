@@ -214,7 +214,11 @@ contract DSCEngine is ReentrancyGuard {
         if (userHealthFactor < PRECISION) revert DSCEngine__BreaksHealthFactor(userHealthFactor);
     }
 
-    function _calculateHealthFactor(uint256 totalDscMinted, uint256 collateralValueInUsd) internal pure returns (uint256) {
+    function _calculateHealthFactor(uint256 totalDscMinted, uint256 collateralValueInUsd)
+        internal
+        pure
+        returns (uint256)
+    {
         if (totalDscMinted == 0) return type(uint256).max;
         uint256 collateralAdjustedForThresHold = (collateralValueInUsd * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
         return (collateralAdjustedForThresHold * PRECISION) / totalDscMinted;
@@ -241,11 +245,19 @@ contract DSCEngine is ReentrancyGuard {
         return _getUsdValue(token, _amount);
     }
 
-    function getAccountInfo(address user) external view returns (uint256 totalDSCMinted, uint256 collateralValueInUsd) {
+    function getAccountInfo(address user)
+        external
+        view
+        returns (uint256 totalDSCMinted, uint256 collateralValueInUsd)
+    {
         (totalDSCMinted, collateralValueInUsd) = _getAccountInfo(user);
     }
 
-    function calculateHealthFactor(uint256 totalDscMinted, uint256 collateralValueInUsd) external pure returns (uint256) {
+    function calculateHealthFactor(uint256 totalDscMinted, uint256 collateralValueInUsd)
+        external
+        pure
+        returns (uint256)
+    {
         return _calculateHealthFactor(totalDscMinted, collateralValueInUsd);
     }
 
@@ -265,7 +277,7 @@ contract DSCEngine is ReentrancyGuard {
         return LIQUIDATION_THRESHOLD;
     }
 
-        function getLiquidationBonus() external pure returns (uint256) {
+    function getLiquidationBonus() external pure returns (uint256) {
         return LIQUIDATION_BONUS;
     }
 
@@ -291,7 +303,7 @@ contract DSCEngine is ReentrancyGuard {
 
     // Private & Internal view functions
 
-        /**
+    /**
      * Returns how close to liquidate a user is
      * If a user goes below 1, then they can get liquidated
      */
