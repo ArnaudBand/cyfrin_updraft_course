@@ -23,7 +23,7 @@ contract DSCEngineTest is Test {
     address public USER = makeAddr("user");
     uint256 public constant AMOUNT_COLLATERAL = 10e18;
     uint256 public constant STARTING_ERC20_BALANCE = 10e18;
-    uint256 public AMOUNT_TO_MINT = 10 ether;
+    uint256 public AMOUNT_TO_MINT = 100 ether;
 
     function setUp() public {
         DeployDSC deployer = new DeployDSC();
@@ -194,5 +194,15 @@ contract DSCEngineTest is Test {
   function testGetCollateralTokensLength() public view {
     address[] memory collateralTokens = engine.getCollateralTokens();
     assertEq(collateralTokens.length, 2);
+  }
+
+  function testGetCollateralTokensLengthAfterAddingCollateral() public {
+    vm.startPrank(USER);
+    ERC20Mock(weth).mint(USER, AMOUNT_TO_MINT);
+    ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+    engine.depositCollateral(weth, AMOUNT_COLLATERAL);
+    address[] memory collateralTokens = engine.getCollateralTokens();
+    assertEq(collateralTokens.length, 2);
+    vm.stopPrank();
   }
 }
