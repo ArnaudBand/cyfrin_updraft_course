@@ -173,4 +173,9 @@ contract DSCEngineTest is Test {
         uint256 userBalance = dsc.balanceOf(USER);
         assertEq(userBalance, 0);
     }
+
+  function testReportsHealthFactor() public depositedCollateralAndMintedDsc {
+    uint256 healthFactor = engine.getHealthFactor(USER);
+    assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
+  }
 }
