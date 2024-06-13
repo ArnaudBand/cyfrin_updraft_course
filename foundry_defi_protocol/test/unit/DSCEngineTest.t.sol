@@ -205,4 +205,14 @@ contract DSCEngineTest is Test {
     assertEq(collateralTokens.length, 2);
     vm.stopPrank();
   }
+
+  function testGetCollateralTokensLengthAfterAddingCollateralAndMinting() public {
+    vm.startPrank(USER);
+    ERC20Mock(weth).mint(USER, AMOUNT_TO_MINT);
+    ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+    engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
+    address[] memory collateralTokens = engine.getCollateralTokens();
+    assertEq(collateralTokens.length, 2);
+    vm.stopPrank();
+  }
 }
