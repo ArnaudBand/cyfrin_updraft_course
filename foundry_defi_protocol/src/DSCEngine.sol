@@ -253,6 +253,10 @@ contract DSCEngine is ReentrancyGuard {
         return s_collateralDeposited[user][token];
     }
 
+    function getPrecision() external pure returns (uint256) {
+        return PRECISION;
+    }
+
     // Private & Internal view functions
 
         /**
