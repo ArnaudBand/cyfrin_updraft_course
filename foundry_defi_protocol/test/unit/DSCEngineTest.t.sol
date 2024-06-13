@@ -178,4 +178,11 @@ contract DSCEngineTest is Test {
     uint256 healthFactor = engine.getHealthFactor(USER);
     assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
   }
+
+  function testHealthFactorCanGoBelowOne() public depositedCollateralAndMintedDsc {
+    int256 updateEthPriceInUsd = 10e8;
+     MockV3Aggregator(ethUsdPriceFeed).updateAnswer(updateEthPriceInUsd);
+    uint256 healthFactor = engine.getHealthFactor(USER);
+    assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
+  }
 }
