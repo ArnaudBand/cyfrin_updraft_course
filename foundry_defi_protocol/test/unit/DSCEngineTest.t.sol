@@ -139,4 +139,12 @@ contract DSCEngineTest is Test {
         engine.redeemCollateralForDsc(weth, 0, AMOUNT_TO_MINT);
         vm.stopPrank();
     }
+
+    function testMustRedeemMoreThanZeroDsc() public depositedCollateralAndMintedDsc {
+        vm.startPrank(USER);
+        dsc.approve(address(engine), AMOUNT_TO_MINT);
+        vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
+        engine.redeemCollateralForDsc(weth, AMOUNT_COLLATERAL, 0);
+        vm.stopPrank();
+    }
 }
