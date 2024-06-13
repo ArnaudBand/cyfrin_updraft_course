@@ -147,4 +147,20 @@ contract DSCEngineTest is Test {
         engine.redeemCollateralForDsc(weth, AMOUNT_COLLATERAL, 0);
         vm.stopPrank();
     }
+
+       function testRevertIfMintAmountBreaksHealthFactor() public depositedCollateral {
+        (, int256 price, , , ) = MockV3Aggregator(ethUsdPriceFeed).latestRoundData();
+        AMOUNT_TO_MINT = (AMOUNT_COLLATERAL * (uint256(price) * engine.getAdditionalFeedPrecision())) / engine.getPrecision();
+        vm.startPrank(USER);
+        uint256 expectedHealthFactor = engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL));
+        vm.expectRevert(abi.encodeWithSelector(DSCEngine.DSCEngine__BreaksHealthFactor.selector, expectedHealthFactor));
+        engine.mintDsc(AMOUNT_TO_MINT);
+        vm.stopPrank();
+    }
+
+    function testCantBurnMoreThanUserHas() public  {
+        vm.startPrank(USER);
+        vm.expectRevert();
+        engine.burnDsc(AMOUNT_TO_MINT);
+    }
 }
