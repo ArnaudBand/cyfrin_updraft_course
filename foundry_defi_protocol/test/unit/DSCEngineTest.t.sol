@@ -24,6 +24,7 @@ contract DSCEngineTest is Test {
     uint256 public constant AMOUNT_COLLATERAL = 10e18;
     uint256 public constant STARTING_ERC20_BALANCE = 10e18;
     uint256 public AMOUNT_TO_MINT = 10 ether;
+
     function setUp() public {
         DeployDSC deployer = new DeployDSC();
         (dsc, engine, config) = deployer.run();
@@ -31,7 +32,7 @@ contract DSCEngineTest is Test {
         ERC20Mock(weth).mint(USER, STARTING_ERC20_BALANCE);
     }
 
-    address[] public  tokenAddresses;
+    address[] public tokenAddresses;
     address[] public priceFeedAddresses;
 
     function testRevertIfTokenLengthDoesntMatchPriceFeeds() public {
@@ -69,7 +70,7 @@ contract DSCEngineTest is Test {
     }
 
     function testRevertIfCollateralNotApproved() public {
-        ERC20Mock rand = new ERC20Mock('RAN', 'RANDOM', USER, AMOUNT_COLLATERAL);
+        ERC20Mock rand = new ERC20Mock("RAN", "RANDOM", USER, AMOUNT_COLLATERAL);
         vm.startPrank(USER);
         vm.expectRevert(DSCEngine.DSCEngine_NotAllowedToken.selector);
         engine.depositCollateral(address(rand), AMOUNT_COLLATERAL);
@@ -116,7 +117,6 @@ contract DSCEngineTest is Test {
         engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
         vm.stopPrank();
         _;
-        
     }
 
     function testCanMintWithDepositedCollateralAndCheckBalance() public depositedCollateralAndMintedDsc {
@@ -130,5 +130,13 @@ contract DSCEngineTest is Test {
         uint256 expectedDepositAmount = engine.getTokenAmountFromUsd(weth, collateralValueInUsd);
         assertEq(totalDscMinted, expectedTotalMintedDsc);
         assertEq(AMOUNT_COLLATERAL, expectedDepositAmount);
+    }
+
+    function testMustRedeemMoreThanZero() public depositedCollateralAndMintedDsc {
+        vm.startPrank(USER);
+        dsc.approve(address(engine), AMOUNT_TO_MINT);
+        vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
+        engine.redeemCollateralForDsc(weth, 0, AMOUNT_TO_MINT);
+        vm.stopPrank();
     }
 }
