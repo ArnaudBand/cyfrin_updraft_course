@@ -22,6 +22,7 @@ contract DSCEngineTest is Test {
     uint256 public deployerKey;
 
     address public USER = makeAddr("user");
+    address public liquidator = makeAddr("liquidator");
     uint256 public constant AMOUNT_COLLATERAL = 10e18;
     uint256 public constant STARTING_ERC20_BALANCE = 10e18;
     uint256 public AMOUNT_TO_MINT = 100 ether;
@@ -211,17 +212,18 @@ contract DSCEngineTest is Test {
         ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
         engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
         vm.stopPrank();
+        int256 ethUsdUpdatedPrice = 18e8; // 1 ETH = $18
 
-        MockV3Aggregator(ethUsdPriceFeed).updateAnswer(10e8);
-        uint256 healthFactor = engine.getHealthFactor(USER);
+        MockV3Aggregator(ethUsdPriceFeed).updateAnswer(ethUsdUpdatedPrice);
+        uint256 userHealthFactor = engine.getHealthFactor(USER);
 
-        ERC20Mock(weth).mint(USER, collateralToCover);
+        ERC20Mock(weth).mint(liquidator, collateralToCover);
 
-        vm.startPrank(USER);
+        vm.startPrank(liquidator);
         ERC20Mock(weth).approve(address(engine), collateralToCover);
         engine.depositCollateralAndMintDsc(weth, collateralToCover, AMOUNT_TO_MINT);
         dsc.approve(address(engine), AMOUNT_TO_MINT);
-        engine.liquidate(weth, USER, AMOUNT_TO_MINT);
+        engine.liquidate(weth, USER, AMOUNT_TO_MINT); // We are covering their whole debt
         vm.stopPrank();
         _;
     }
@@ -236,7 +238,12 @@ contract DSCEngineTest is Test {
         assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
     }
 
-    
+    function testLiquidatorTakesOnUserDebt() public liquidated {
+        (uint256 liquidatorDscBalance, uint256 liquidatorCollateralValueInUsd) = engine.getAccountInfo(liquidator);
+        uint256 expectedLiquidatorCollateralValueInUsd = engine.getUsdValue(weth, collateralToCover);
+        assertEq(liquidatorDscBalance, AMOUNT_TO_MINT);
+        assertEq(liquidatorCollateralValueInUsd, expectedLiquidatorCollateralValueInUsd);
+    }
 
     function testHealthFactorCanGoBelowOne() public depositedCollateralAndMintedDsc {
         int256 updateEthPriceInUsd = 10e8;
