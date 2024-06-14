@@ -336,4 +336,9 @@ contract DSCEngineTest is Test {
         uint256 additionalFeedPrecision = engine.getAdditionalFeedPrecision();
         assertEq(additionalFeedPrecision, 1e10);
     }
+
+    function testGetPrecision() public view {
+        uint256 precision = engine.getPrecision();
+        assertEq(precision, 1e18);
+    }
 }
