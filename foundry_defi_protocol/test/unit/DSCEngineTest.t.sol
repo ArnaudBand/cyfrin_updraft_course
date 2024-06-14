@@ -293,4 +293,20 @@ contract DSCEngineTest is Test {
         uint256 minHealthFactor = engine.getMinHealthFactor();
         assertEq(minHealthFactor, 1e18);
     }
+
+    function testGetLiquidationThresHold() public view {
+        uint256 liquidationThreshold = engine.getLiquidationThreshold();
+        assertEq(liquidationThreshold, 50);
+    }
+
+    function testGetAccountCollateralValueFromInfo() public depositedCollateral {
+        (, uint256 collateralValueInUsd) = engine.getAccountInfo(USER);
+        uint256 expectedCollateralValueInUsd = engine.getUsdValue(weth, AMOUNT_COLLATERAL);
+        assertEq(collateralValueInUsd, expectedCollateralValueInUsd);
+    }
+
+    function testGetDsc() public view {
+        address dscAddress = engine.getDsc();
+        assertEq(dscAddress, address(dsc));
+    }
 }
