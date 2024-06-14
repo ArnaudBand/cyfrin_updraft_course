@@ -314,4 +314,9 @@ contract DSCEngineTest is Test {
         uint256 liquidationPrecision = engine.getLiquidationPrecision();
         assertEq(liquidationPrecision, 100);
     }
+
+    function testGetLiquidationBonus() public view {
+        uint256 liquidationBonus = engine.getLiquidationBonus();
+        assertEq(liquidationBonus, 10);
+    }
 }
