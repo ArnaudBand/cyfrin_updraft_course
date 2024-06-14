@@ -309,4 +309,9 @@ contract DSCEngineTest is Test {
         address dscAddress = engine.getDsc();
         assertEq(dscAddress, address(dsc));
     }
+
+    function testGetLiquidationPrecision() public view {
+        uint256 liquidationPrecision = engine.getLiquidationPrecision();
+        assertEq(liquidationPrecision, 100);
+    }
 }
