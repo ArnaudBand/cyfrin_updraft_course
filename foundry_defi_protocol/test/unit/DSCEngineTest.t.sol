@@ -7,6 +7,7 @@ import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {DecentralizedStableCoin} from "../../src/DecentralizedStableCoin.sol";
 import {DSCEngine} from "../../src/DSCEngine.sol";
 import {ERC20Mock} from "../mocks/ERC20Mock.sol";
+import {MockFailedMintDSC} from "../mocks/MockFailedMintDSC.sol";
 import {MockV3Aggregator} from "../mocks/MockV3Aggregator.sol";
 
 contract DSCEngineTest is Test {
@@ -155,6 +156,16 @@ contract DSCEngineTest is Test {
         uint256 expectedHealthFactor = engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL));
         vm.expectRevert(abi.encodeWithSelector(DSCEngine.DSCEngine__BreaksHealthFactor.selector, expectedHealthFactor));
         engine.mintDsc(AMOUNT_TO_MINT);
+        vm.stopPrank();
+    }
+
+    function testRevertsIfMintFails() public {
+        MockFailedMintDSC failedDsc = new MockFailedMintDSC();
+        DSCEngine mockengine = new DSCEngine(tokenAddresses, priceFeedAddresses, address(failedDsc));
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(mockengine), AMOUNT_COLLATERAL);
+        vm.expectRevert();
+        mockengine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
         vm.stopPrank();
     }
 
