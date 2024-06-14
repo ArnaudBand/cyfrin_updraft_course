@@ -25,6 +25,7 @@ contract DSCEngineTest is Test {
     uint256 public constant AMOUNT_COLLATERAL = 10e18;
     uint256 public constant STARTING_ERC20_BALANCE = 10e18;
     uint256 public AMOUNT_TO_MINT = 100 ether;
+    uint256 public collateralToCover = 20 ether;
 
     function setUp() public {
         DeployDSC deployer = new DeployDSC();
@@ -149,11 +150,13 @@ contract DSCEngineTest is Test {
         vm.stopPrank();
     }
 
-       function testRevertIfMintAmountBreaksHealthFactor() public depositedCollateral {
-        (, int256 price, , , ) = MockV3Aggregator(ethUsdPriceFeed).latestRoundData();
-        AMOUNT_TO_MINT = (AMOUNT_COLLATERAL * (uint256(price) * engine.getAdditionalFeedPrecision())) / engine.getPrecision();
+    function testRevertIfMintAmountBreaksHealthFactor() public depositedCollateral {
+        (, int256 price,,,) = MockV3Aggregator(ethUsdPriceFeed).latestRoundData();
+        AMOUNT_TO_MINT =
+            (AMOUNT_COLLATERAL * (uint256(price) * engine.getAdditionalFeedPrecision())) / engine.getPrecision();
         vm.startPrank(USER);
-        uint256 expectedHealthFactor = engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL));
+        uint256 expectedHealthFactor =
+            engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL));
         vm.expectRevert(abi.encodeWithSelector(DSCEngine.DSCEngine__BreaksHealthFactor.selector, expectedHealthFactor));
         engine.mintDsc(AMOUNT_TO_MINT);
         vm.stopPrank();
@@ -169,7 +172,7 @@ contract DSCEngineTest is Test {
         vm.stopPrank();
     }
 
-    function testCantBurnMoreThanUserHas() public  {
+    function testCantBurnMoreThanUserHas() public {
         vm.startPrank(USER);
         vm.expectRevert();
         engine.burnDsc(AMOUNT_TO_MINT);
@@ -185,45 +188,92 @@ contract DSCEngineTest is Test {
         assertEq(userBalance, 0);
     }
 
-  function testReportsHealthFactor() public depositedCollateralAndMintedDsc {
-    uint256 healthFactor = engine.getHealthFactor(USER);
-    assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
-  }
+    function testReportsHealthFactor() public depositedCollateralAndMintedDsc {
+        uint256 healthFactor = engine.getHealthFactor(USER);
+        assertEq(
+            healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL))
+        );
+    }
 
-  function testHealthFactorCanGoBelowOne() public depositedCollateralAndMintedDsc {
-    int256 updateEthPriceInUsd = 10e8;
-     MockV3Aggregator(ethUsdPriceFeed).updateAnswer(updateEthPriceInUsd);
-    uint256 healthFactor = engine.getHealthFactor(USER);
-    assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
-  }
+    function testCantLiquidateGoodHealthFactor() public depositedCollateralAndMintedDsc {
+        ERC20Mock(weth).mint(USER, AMOUNT_COLLATERAL);
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+        engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
+        dsc.approve(address(engine), AMOUNT_TO_MINT);
+        vm.expectRevert(DSCEngine.DSCEngine__HealthFactor.selector);
+        engine.liquidate(weth, USER, AMOUNT_TO_MINT);
+        vm.stopPrank();
+    }
 
-  function testGetCollateralTokens() public view {
-    address[] memory collateralTokens = engine.getCollateralTokens();
-    assertEq(collateralTokens[0], weth);
-  }
+    modifier liquidated() {
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+        engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
+        vm.stopPrank();
 
-  function testGetCollateralTokensLength() public view {
-    address[] memory collateralTokens = engine.getCollateralTokens();
-    assertEq(collateralTokens.length, 2);
-  }
+        MockV3Aggregator(ethUsdPriceFeed).updateAnswer(10e8);
+        uint256 healthFactor = engine.getHealthFactor(USER);
 
-  function testGetCollateralTokensLengthAfterAddingCollateral() public {
-    vm.startPrank(USER);
-    ERC20Mock(weth).mint(USER, AMOUNT_TO_MINT);
-    ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
-    engine.depositCollateral(weth, AMOUNT_COLLATERAL);
-    address[] memory collateralTokens = engine.getCollateralTokens();
-    assertEq(collateralTokens.length, 2);
-    vm.stopPrank();
-  }
+        ERC20Mock(weth).mint(USER, collateralToCover);
 
-  function testGetCollateralTokensLengthAfterAddingCollateralAndMinting() public {
-    vm.startPrank(USER);
-    ERC20Mock(weth).mint(USER, AMOUNT_TO_MINT);
-    ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
-    engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
-    address[] memory collateralTokens = engine.getCollateralTokens();
-    assertEq(collateralTokens.length, 2);
-    vm.stopPrank();
-  }
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(engine), collateralToCover);
+        engine.depositCollateralAndMintDsc(weth, collateralToCover, AMOUNT_TO_MINT);
+        dsc.approve(address(engine), AMOUNT_TO_MINT);
+        engine.liquidate(weth, USER, AMOUNT_TO_MINT);
+        vm.stopPrank();
+        _;
+    }
+
+    function testCanLiquidate() public depositedCollateralAndMintedDsc {
+        uint256 userBalance = dsc.balanceOf(USER);
+        assertEq(userBalance, AMOUNT_TO_MINT);
+    }
+
+    function testCanLiquidateAndCheckHealthFactor() public depositedCollateralAndMintedDsc {
+        uint256 healthFactor = engine.getHealthFactor(USER);
+        assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
+    }
+
+    
+
+    function testHealthFactorCanGoBelowOne() public depositedCollateralAndMintedDsc {
+        int256 updateEthPriceInUsd = 10e8;
+        MockV3Aggregator(ethUsdPriceFeed).updateAnswer(updateEthPriceInUsd);
+        uint256 healthFactor = engine.getHealthFactor(USER);
+        assertEq(
+            healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL))
+        );
+    }
+
+    function testGetCollateralTokens() public view {
+        address[] memory collateralTokens = engine.getCollateralTokens();
+        assertEq(collateralTokens[0], weth);
+    }
+
+    function testGetCollateralTokensLength() public view {
+        address[] memory collateralTokens = engine.getCollateralTokens();
+        assertEq(collateralTokens.length, 2);
+    }
+
+    function testGetCollateralTokensLengthAfterAddingCollateral() public {
+        vm.startPrank(USER);
+        ERC20Mock(weth).mint(USER, AMOUNT_TO_MINT);
+        ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+        engine.depositCollateral(weth, AMOUNT_COLLATERAL);
+        address[] memory collateralTokens = engine.getCollateralTokens();
+        assertEq(collateralTokens.length, 2);
+        vm.stopPrank();
+    }
+
+    function testGetCollateralTokensLengthAfterAddingCollateralAndMinting() public {
+        vm.startPrank(USER);
+        ERC20Mock(weth).mint(USER, AMOUNT_TO_MINT);
+        ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+        engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
+        address[] memory collateralTokens = engine.getCollateralTokens();
+        assertEq(collateralTokens.length, 2);
+        vm.stopPrank();
+    }
 }
