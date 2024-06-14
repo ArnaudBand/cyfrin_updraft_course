@@ -235,7 +235,9 @@ contract DSCEngineTest is Test {
 
     function testCanLiquidateAndCheckHealthFactor() public depositedCollateralAndMintedDsc {
         uint256 healthFactor = engine.getHealthFactor(USER);
-        assertEq(healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL)));
+        assertEq(
+            healthFactor, engine.calculateHealthFactor(AMOUNT_TO_MINT, engine.getUsdValue(weth, AMOUNT_COLLATERAL))
+        );
     }
 
     function testLiquidatorTakesOnUserDebt() public liquidated {
@@ -243,6 +245,16 @@ contract DSCEngineTest is Test {
         uint256 expectedLiquidatorCollateralValueInUsd = engine.getUsdValue(weth, collateralToCover);
         assertEq(liquidatorDscBalance, AMOUNT_TO_MINT);
         assertEq(liquidatorCollateralValueInUsd, expectedLiquidatorCollateralValueInUsd);
+    }
+
+    function testLiquidatationPayOutIsCorrect() public liquidated {
+        uint256 liquidatorWethBalance = ERC20Mock(weth).balanceOf(liquidator);
+        uint256 expectedWeth = engine.getTokenAmountFromUsd(weth, AMOUNT_TO_MINT)
+            + (engine.getTokenAmountFromUsd(weth, AMOUNT_TO_MINT) / engine.getLiquidationBonus());
+        console.log("ex", expectedWeth);
+        uint256 hardCodedExpected = 6_111_111_111_111_111_110;
+        assertEq(liquidatorWethBalance, hardCodedExpected);
+        assertEq(liquidatorWethBalance, expectedWeth);
     }
 
     function testHealthFactorCanGoBelowOne() public depositedCollateralAndMintedDsc {
