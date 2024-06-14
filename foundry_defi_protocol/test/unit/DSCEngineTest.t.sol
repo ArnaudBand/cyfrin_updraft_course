@@ -257,6 +257,43 @@ contract DSCEngineTest is Test {
         assertEq(liquidatorWethBalance, expectedWeth);
     }
 
+    function testMintDsc() public depositedCollateral {
+        vm.startPrank(USER);
+
+        engine.mintDsc(AMOUNT_TO_MINT);
+
+        (uint256 totalDscMinted,) = engine.getAccountInfo(USER);
+        assertEq(totalDscMinted, AMOUNT_TO_MINT);
+
+        vm.stopPrank();
+    }
+
+    function testRedeemCollateral() public depositedCollateral {
+        vm.startPrank(USER);
+
+        uint256 amountToRedeem = 5e18;
+        engine.redeemCollateral(weth, amountToRedeem);
+
+        uint256 remainingCollateral = engine.getCollateralBalanceOfUser(USER, weth);
+        assertEq(remainingCollateral, AMOUNT_COLLATERAL - amountToRedeem);
+
+        vm.stopPrank();
+    }
+
+    function testDepositCollateralAndMintDsc() public {
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(engine), AMOUNT_COLLATERAL);
+
+        engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
+
+        // Check collateral and DSC minted
+        (uint256 totalDscMinted, ) = engine.getAccountInfo(USER);
+        assertEq(totalDscMinted, AMOUNT_TO_MINT);
+        assertEq(engine.getCollateralBalanceOfUser(USER, weth), AMOUNT_COLLATERAL);
+
+        vm.stopPrank();
+    }
+
     function testHealthFactorCanGoBelowOne() public depositedCollateralAndMintedDsc {
         int256 updateEthPriceInUsd = 10e8;
         MockV3Aggregator(ethUsdPriceFeed).updateAnswer(updateEthPriceInUsd);
