@@ -288,4 +288,9 @@ contract DSCEngineTest is Test {
         address priceFeeds = engine.getCollateralTokenPriceFeed(weth);
         assertEq(priceFeeds, ethUsdPriceFeed);
     }
+
+    function testGetMinHealthFactor() public view {
+        uint256 minHealthFactor = engine.getMinHealthFactor();
+        assertEq(minHealthFactor, 1e18);
+    }
 }
