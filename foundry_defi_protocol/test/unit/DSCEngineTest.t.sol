@@ -283,4 +283,9 @@ contract DSCEngineTest is Test {
         assertEq(collateralTokens.length, 2);
         vm.stopPrank();
     }
+
+    function testGetCollateralTokenPriceFeed() public view {
+        address priceFeeds = engine.getCollateralTokenPriceFeed(weth);
+        assertEq(priceFeeds, ethUsdPriceFeed);
+    }
 }
