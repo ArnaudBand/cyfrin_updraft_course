@@ -287,7 +287,7 @@ contract DSCEngineTest is Test {
         engine.depositCollateralAndMintDsc(weth, AMOUNT_COLLATERAL, AMOUNT_TO_MINT);
 
         // Check collateral and DSC minted
-        (uint256 totalDscMinted, ) = engine.getAccountInfo(USER);
+        (uint256 totalDscMinted,) = engine.getAccountInfo(USER);
         assertEq(totalDscMinted, AMOUNT_TO_MINT);
         assertEq(engine.getCollateralBalanceOfUser(USER, weth), AMOUNT_COLLATERAL);
 
