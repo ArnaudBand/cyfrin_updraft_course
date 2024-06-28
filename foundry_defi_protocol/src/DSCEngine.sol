@@ -125,9 +125,10 @@ contract DSCEngine is ReentrancyGuard {
      * CEI: Check, Effects, Interactions
      */
     function redeemCollateral(address tokenCollateralAddress, uint256 amountCollateral)
-        public
+        external
         moreThanZero(amountCollateral)
         nonReentrant
+        isAllowedToken(tokenCollateralAddress)
     {
         _redeemCollateral(tokenCollateralAddress, amountCollateral, msg.sender, msg.sender);
         _revertIfHealthFactorIsBroken(msg.sender);
@@ -142,9 +143,12 @@ contract DSCEngine is ReentrancyGuard {
      */
     function redeemCollateralForDsc(address tokenCollateralAddress, uint256 amountCollateral, uint256 amountDscToBurn)
         external
+        moreThanZero(amountCollateral)
+        isAllowedToken(tokenCollateralAddress)
     {
-        burnDsc(amountDscToBurn);
-        redeemCollateral(tokenCollateralAddress, amountCollateral);
+        _burnDsc(amountDscToBurn, msg.sender, msg.sender);
+        _redeemCollateral(tokenCollateralAddress, amountCollateral, msg.sender, msg.sender);
+        _revertIfHealthFactorIsBroken(msg.sender);
     }
 
     /**
