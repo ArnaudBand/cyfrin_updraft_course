@@ -66,10 +66,19 @@ contract Handler is Test {
     }
 
     //  This will break the invariant test
-    // function updateCollateralPrice(uint96 newPrice) public {
-    //     int256 newPriceInt = int256(uint256(newPrice));
-    //     ethUsdPriceFeed.updateAnswer(newPriceInt);
-    // }
+    function updateCollateralPrice(uint128, /* newPrice*/ uint256 collateralSeed) public {
+        int256 newPriceInt = 0;
+        ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
+        MockV3Aggregator priceFeed = MockV3Aggregator(engine.getCollateralTokenPriceFeed(address(collateral)));
+        priceFeed.updateAnswer(newPriceInt);
+    }
+
+    function transferDSC(uint256 amountDSC, address to) public {
+        amountDSC = bound(amountDSC, 0, dsc.balanceOf(msg.sender));
+        // if (amountDSC == 0) return;
+        vm.startPrank(msg.sender);
+        dsc.transfer(to, amountDSC);
+    }
 
     function _getCollateralFromSeed(uint256 seed) private view returns (ERC20Mock) {
         return seed % 2 == 0 ? weth : wbtc;
