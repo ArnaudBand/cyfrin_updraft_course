@@ -31,7 +31,7 @@ contract Handler is Test {
         btcUsdPriceFeed = MockV3Aggregator(engine.getCollateralTokenPriceFeed(address(wbtc)));
     }
 
-    // redeem collateral <-
+    // depisit collateral <-
     function depositCollateral(uint256 collateralSeed, uint256 amountCollateral) public {
         ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
         amountCollateral = bound(amountCollateral, 1, MAX_DEPOSIT_SIZE);
@@ -42,6 +42,7 @@ contract Handler is Test {
         vm.stopPrank();
     }
 
+    // redeem collateral <-
     function redeemCollateral(uint256 collateralSeed, uint256 amountCollateral) public {
         ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
         uint256 maxCollateralToRedeem = engine.getCollateralBalanceOfUser(msg.sender, address(collateral));
@@ -65,7 +66,7 @@ contract Handler is Test {
         timesIsCalled++;
     }
 
-    //  This will break the invariant test
+    // update price feed <-
     function updateCollateralPrice(uint128, /* newPrice*/ uint256 collateralSeed) public {
         int256 newPriceInt = 0;
         ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
@@ -73,6 +74,7 @@ contract Handler is Test {
         priceFeed.updateAnswer(newPriceInt);
     }
 
+    // transfer DSC <-
     function transferDSC(uint256 amountDSC, address to) public {
         amountDSC = bound(amountDSC, 0, dsc.balanceOf(msg.sender));
         // if (amountDSC == 0) return;
