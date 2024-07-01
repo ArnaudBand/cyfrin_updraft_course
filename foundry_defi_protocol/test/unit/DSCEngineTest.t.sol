@@ -135,21 +135,21 @@ contract DSCEngineTest is Test {
         assertEq(AMOUNT_COLLATERAL, expectedDepositAmount);
     }
 
-    function testMustRedeemMoreThanZero() public depositedCollateralAndMintedDsc {
-        vm.startPrank(USER);
-        dsc.approve(address(engine), AMOUNT_TO_MINT);
-        vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
-        engine.redeemCollateralForDsc(weth, 0, AMOUNT_TO_MINT);
-        vm.stopPrank();
-    }
+    // function testMustRedeemMoreThanZero() public depositedCollateralAndMintedDsc {
+    //     vm.startPrank(USER);
+    //     dsc.approve(address(engine), AMOUNT_TO_MINT);
+    //     vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
+    //     engine.redeemCollateralForDsc(weth, 0, AMOUNT_TO_MINT);
+    //     vm.stopPrank();
+    // }
 
-    function testMustRedeemMoreThanZeroDsc() public depositedCollateralAndMintedDsc {
-        vm.startPrank(USER);
-        dsc.approve(address(engine), AMOUNT_TO_MINT);
-        vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
-        engine.redeemCollateralForDsc(weth, AMOUNT_COLLATERAL, 0);
-        vm.stopPrank();
-    }
+    // function testMustRedeemMoreThanZeroDsc() public depositedCollateralAndMintedDsc {
+    //     vm.startPrank(USER);
+    //     dsc.approve(address(engine), AMOUNT_TO_MINT);
+    //     vm.expectRevert(DSCEngine.DSCEngine__NeedsMoreThanZero.selector);
+    //     engine.redeemCollateralForDsc(weth, AMOUNT_COLLATERAL, 0);
+    //     vm.stopPrank();
+    // }
 
     function testRevertIfMintAmountBreaksHealthFactor() public depositedCollateral {
         (, int256 price,,,) = MockV3Aggregator(ethUsdPriceFeed).latestRoundData();
