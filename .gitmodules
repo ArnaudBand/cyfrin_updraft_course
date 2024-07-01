@@ -55,3 +55,6 @@
 [submodule "foundry_defi_protocol/lib/chainlink-brownie-contracts"]
 	path = foundry_defi_protocol/lib/chainlink-brownie-contracts
 	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
+[submodule "foundry_merkle_airdrop/lib/forge-std"]
+	path = foundry_merkle_airdrop/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
