@@ -61,3 +61,6 @@
 [submodule "foundry_merkle_airdrop/lib/openzeppelin-contracts"]
 	path = foundry_merkle_airdrop/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "foundry_merkle_airdrop/lib/murky"]
+	path = foundry_merkle_airdrop/lib/murky
+	url = https://github.com/dmfxyz/murky
