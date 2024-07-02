@@ -11,10 +11,13 @@ contract MerkleAirdrop {
   using SafeERC20 for IERC20;
 
   error MerkleAirdrop__InvalidProof();
+  error MerkleAirdrop__AlreadyClaimed();
 
   address[] claimers;
   bytes32 private immutable i_merkleRoot;
   IERC20 private immutable i_airdropToken;
+
+  mapping (address claimer => bool claimed) private s_hasClaimed;
 
   event Claim(address indexed account, uint256 amount);
 
@@ -30,6 +33,11 @@ contract MerkleAirdrop {
     if (!MerkleProof.verify(merkleProof, i_merkleRoot, node)) {
       // If the proof is invalid, revert
       revert MerkleAirdrop__InvalidProof();
+    }
+    // Check if the account has already claimed
+    if (s_hasClaimed[account]) {
+      // If the account has already claimed, revert
+      revert MerkleAirdrop__AlreadyClaimed();
     }
     // Emit the claim event
     emit Claim(account, amount);
