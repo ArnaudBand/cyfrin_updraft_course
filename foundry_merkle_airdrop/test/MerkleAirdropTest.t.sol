@@ -27,12 +27,10 @@ contract MerkleAirdropTest is Test {
     }
 
     function testUsersCanClaim() public {
-        uint256 startingBalance = token.balanceOf(user);
         vm.prank(user);
         airdrop.claim(user, AMOUNT_TO_CLAIM, proof);
         uint256 endingBalance = token.balanceOf(user);
-        console.log("Starting balance: %d", startingBalance);
         console.log("Ending balance: %d", endingBalance);
-        assertEq(endingBalance, startingBalance + AMOUNT_TO_CLAIM);
+        assertEq(endingBalance, AMOUNT_TO_CLAIM);
     }
 }
