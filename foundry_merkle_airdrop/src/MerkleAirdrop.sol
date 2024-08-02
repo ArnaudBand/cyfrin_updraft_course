@@ -59,19 +59,23 @@ contract MerkleAirdrop is EIP712 {
         i_airdropToken.safeTransfer(account, amount);
     }
 
+    // Get the message hash
     function getMessage(address account, uint256 amount) public view returns (bytes32) {
         return
             _hashTypedDataV4(keccak256(abi.encode(MESSAGE_TYPEHASH, AirdropClaim({account: account, amount: amount}))));
     }
 
+    // Get the merkle root
     function getMerkleRoot() external view returns (bytes32) {
         return i_merkleRoot;
     }
 
+    // Get the airdrop token address
     function getAirdropToken() external view returns (IERC20) {
         return i_airdropToken;
     }
 
+    // Verify the signature
     function _isValidSignture(address account, bytes32 digest, uint8 v, bytes32 r, bytes32 s)
         internal
         pure
