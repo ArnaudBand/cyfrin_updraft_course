@@ -67,3 +67,6 @@
 [submodule "foundry_merkle_airdrop/lib/foundry-devops"]
 	path = foundry_merkle_airdrop/lib/foundry-devops
 	url = https://github.com/cyfrin/foundry-devops
+[submodule "foundry_merkle_airdrop/lib/foundry-era-contracts"]
+	path = foundry_merkle_airdrop/lib/foundry-era-contracts
+	url = https://github.com/Cyfrin/foundry-era-contracts
