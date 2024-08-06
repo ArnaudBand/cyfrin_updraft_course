@@ -3,6 +3,10 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-remappings = ["@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/", "forge-std/=lib/forge-std/src/"]
+remappings = [
+  '@openzeppelin/contracts=lib/openzeppelin-contracts/contracts', 
+  '@openzeppelin/contracts-upgradeable=lib/openzeppelin-contracts-upgradeable/contracts', 
+  'forge-std/=lib/forge-std/src/']
+
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
