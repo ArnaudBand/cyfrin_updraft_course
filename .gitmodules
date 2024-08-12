@@ -79,3 +79,6 @@
 [submodule "foundry_upgradable/lib/openzeppelin-contracts"]
 	path = foundry_upgradable/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "foundry_upgradable/lib/foundry-devops"]
+	path = foundry_upgradable/lib/foundry-devops
+	url = https://github.com/chainaccelorg/foundry-devops
