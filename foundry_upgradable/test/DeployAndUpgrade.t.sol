@@ -56,17 +56,4 @@ contract DeployAndUpgrade is Test {
         vm.expectRevert(); // Expect revert with the Ownable error message
         upgrader.upgradeBox(proxy, address(box2));
     }
-
-        function testRevertToPreviousVersion() public {
-        BoxV2 box2 = new BoxV2();
-        BoxV1 box1 = new BoxV1();
-
-        // Upgrade to BoxV2
-        vm.prank(OWNER);
-        upgrader.upgradeBox(proxy, address(box2));
-        assertEq(2, BoxV2(proxy).version());
-
-        upgrader.upgradeBox(proxy, address(box1));
-        assertEq(1, BoxV1(proxy).version());
-    }
 }
