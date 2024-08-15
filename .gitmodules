@@ -82,3 +82,6 @@
 [submodule "foundry_upgradable/lib/foundry-devops"]
 	path = foundry_upgradable/lib/foundry-devops
 	url = https://github.com/chainaccelorg/foundry-devops
+[submodule "foundry__account_abstraction/lib/forge-std"]
+	path = foundry__account_abstraction/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
