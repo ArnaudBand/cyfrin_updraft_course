@@ -88,3 +88,6 @@
 [submodule "foundry__account_abstraction/lib/account-abstraction"]
 	path = foundry__account_abstraction/lib/account-abstraction
 	url = https://github.com/eth-infinitism/account-abstraction
+[submodule "foundry__account_abstraction/lib/openzeppelin-contracts"]
+	path = foundry__account_abstraction/lib/openzeppelin-contracts
+	url = https://github.com/openzeppelin/openzeppelin-contracts
