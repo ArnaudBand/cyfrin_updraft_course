@@ -10,11 +10,14 @@ contract HelperConfig is Script {
 
     struct NetworkConfig {
         address entryPoint;
+        address account;
     }
 
     uint256 constant ETH_SEPOLIA_CHAIN_ID = 11155111;
     uint256 constant ZKSYNC_SEPLOLIA_CHAIN_ID = 300;
     uint256 constant LOCAL_CHAIN_ID = 31337;
+    address constant BURN__WALLET = 0x9C8A2750E8814eDF52224a92bD61B4F596a94c17;
+    address constant ANVIL_DEFAULT_ACCOUNT = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
 
     NetworkConfig public activeNetwork;
     mapping(uint256 chainId => NetworkConfig) public networkConfigs;
@@ -30,7 +33,7 @@ contract HelperConfig is Script {
     function getConfigByChainId(uint256 chainId) public returns (NetworkConfig memory) {
         if (chainId == LOCAL_CHAIN_ID) {
             return getOrCreateAnvilEthConfig();
-        } else if (networkConfigs[chainId].entryPoint != address(0)) {
+        } else if (networkConfigs[chainId].account != address(0)) {
             return networkConfigs[chainId];
         } else {
             revert HelperConfig__InvalidChainId();
@@ -38,15 +41,18 @@ contract HelperConfig is Script {
     }
 
     function getEthSepoliaConfig() public pure returns (NetworkConfig memory) {
-        return NetworkConfig({entryPoint: 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789});
+        return NetworkConfig({
+          entryPoint: 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789,
+          account: BURN__WALLET
+        });
     }
 
     function getZkSyncSepoliaConfig() public pure returns (NetworkConfig memory) {
-        return NetworkConfig({entryPoint: address(0)});
+        return NetworkConfig({entryPoint: address(0), account: BURN__WALLET});
     }
 
     function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory) {
-        if (activeNetwork.entryPoint != address(0)) {
+        if (activeNetwork.account != address(0)) {
             return activeNetwork;
         }
         // Deploy mock entry point
@@ -57,7 +63,7 @@ contract HelperConfig is Script {
         vm.stopBroadcast();
         console.log("Deployed mock entry point at address: ", address(entryPoint));
 
-        activeNetwork = NetworkConfig({entryPoint: address(entryPoint)});
+        activeNetwork = NetworkConfig({entryPoint: address(entryPoint), account: ANVIL_DEFAULT_ACCOUNT});
         return activeNetwork;
     }
 }
