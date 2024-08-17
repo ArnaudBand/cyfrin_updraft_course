@@ -10,7 +10,7 @@ import {SIG_VALIDATION_FAILED, SIG_VALIDATION_SUCCESS} from "account-abstraction
 import {IEntryPoint} from "account-abstraction/interfaces/IEntryPoint.sol";
 
 contract MinimalAccount is IAccount, Ownable {
-  // Error
+    // Error
     error MinimalAccount__FailedToPayPreFund();
     error MinimalAccount__NotFromEntryPoint();
     error MinimalAccount__NotFromEntryPointOrOwner();
