@@ -9,6 +9,8 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {SIG_VALIDATION_FAILED, SIG_VALIDATION_SUCCESS} from "account-abstraction/core/Helpers.sol";
 
 contract MinimalAccount is IAccount, Ownable {
+
+  error MinimalAccount__FailedToPayPreFund();
     constructor() Ownable(msg.sender) {}
 
     function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
@@ -16,8 +18,10 @@ contract MinimalAccount is IAccount, Ownable {
         returns (uint256 validationData)
     {
        validationData = _validateSignature(userOp, userOpHash);
+       _payPreFund(missingAccountFunds);
     }
 
+    // EIP191 version of the signed message hash
     function _validateSignature(PackedUserOperation calldata userOp, bytes32 userOpHash) internal view returns (uint256 validatiionData) {
       bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(userOpHash);
       address signer = ECDSA.recover(ethSignedMessageHash, userOp.signature);
@@ -25,5 +29,14 @@ contract MinimalAccount is IAccount, Ownable {
         return SIG_VALIDATION_FAILED;
       }
       return SIG_VALIDATION_SUCCESS;
+    }
+
+    function _payPreFund(uint256 missingAccountFunds) internal {
+      if (missingAccountFunds > 0) {
+        (bool success, ) = msg.sender.call{value: missingAccountFunds, gas: type(uint256).max}("");
+        if (!success) {
+          revert MinimalAccount__FailedToPayPreFund();
+        }
+      }
     }
 }
