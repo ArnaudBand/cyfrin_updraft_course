@@ -29,7 +29,6 @@ contract MinimalAccount is IAccount, Ownable {
             revert MinimalAccount__NotFromEntryPointOrOwner();
         }
         _;
-      
     }
 
     constructor(address entryPoint) Ownable(msg.sender) {
@@ -39,10 +38,10 @@ contract MinimalAccount is IAccount, Ownable {
     receive() external payable {}
 
     function execute(address dest, uint256 value, bytes calldata functionData) external requireEntryPoint {
-      (bool success, bytes memory result) = dest.call{value: value}(functionData);
-      if (!success) {
-          revert MinimalAccount__CallFailed(result);
-      }
+        (bool success, bytes memory result) = dest.call{value: value}(functionData);
+        if (!success) {
+            revert MinimalAccount__CallFailed(result);
+        }
     }
 
     function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
