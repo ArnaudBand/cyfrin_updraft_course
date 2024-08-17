@@ -10,13 +10,16 @@ import {SIG_VALIDATION_FAILED, SIG_VALIDATION_SUCCESS} from "account-abstraction
 import {IEntryPoint} from "account-abstraction/interfaces/IEntryPoint.sol";
 
 contract MinimalAccount is IAccount, Ownable {
+  // Error
     error MinimalAccount__FailedToPayPreFund();
     error MinimalAccount__NotFromEntryPoint();
     error MinimalAccount__NotFromEntryPointOrOwner();
     error MinimalAccount__CallFailed(bytes);
 
+    // Immutable
     IEntryPoint private immutable i_entryPoint;
 
+    // Modifiers
     modifier requireEntryPoint() {
         if (msg.sender != address(i_entryPoint)) {
             revert MinimalAccount__NotFromEntryPoint();
@@ -31,19 +34,25 @@ contract MinimalAccount is IAccount, Ownable {
         _;
     }
 
+    // Constructor
     constructor(address entryPoint) Ownable(msg.sender) {
         i_entryPoint = IEntryPoint(entryPoint);
     }
 
+    // Fallback
     receive() external payable {}
 
+    // External functions
+    // Execute a call to a destination address with a value and calldata
     function execute(address dest, uint256 value, bytes calldata functionData) external requireEntryPoint {
+        // success is true if the call was successful
         (bool success, bytes memory result) = dest.call{value: value}(functionData);
         if (!success) {
             revert MinimalAccount__CallFailed(result);
         }
     }
 
+    // Validate a user operation and pay the pre-fund if needed (if the account has insufficient funds)
     function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
         external
         requireEntryPoint
@@ -67,6 +76,7 @@ contract MinimalAccount is IAccount, Ownable {
         return SIG_VALIDATION_SUCCESS;
     }
 
+    // Pay the pre-fund if needed (if the account has insufficient funds)
     function _payPreFund(uint256 missingAccountFunds) internal {
         if (missingAccountFunds > 0) {
             (bool success,) = msg.sender.call{value: missingAccountFunds, gas: type(uint256).max}("");
@@ -76,6 +86,8 @@ contract MinimalAccount is IAccount, Ownable {
         }
     }
 
+    // getter functions
+    // Get the entry point address
     function getEntryPoint() external view returns (address) {
         return address(i_entryPoint);
     }
