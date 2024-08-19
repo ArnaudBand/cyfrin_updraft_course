@@ -7,7 +7,10 @@ import {PackedUserOperation} from "account-abstraction/interfaces/PackedUserOper
 contract SendPackedUserOp is Script {
   function run() public {}
 
-  function generateSignedPackedUserOp() public returns (PackedUserOperation memory) {}
+  function generateSignedPackedUserOp(bytes memory callData, address sender) public returns (PackedUserOperation memory) {
+    uint256 nonce = vm.getNonce(sender);
+    PackedUserOperation memory packedUserOp = _generateUnsignedPackedUserOp(callData, sender, nonce);
+  }
 
   function _generateUnsignedPackedUserOp(bytes memory callData, address sender, uint256 nonce) internal pure returns (PackedUserOperation memory) {
     uint128 verificationGasLimit = 16777216;
