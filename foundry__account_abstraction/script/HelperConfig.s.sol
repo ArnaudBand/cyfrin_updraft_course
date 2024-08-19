@@ -57,7 +57,7 @@ contract HelperConfig is Script {
         }
         // Deploy mock entry point
         console.log("Deploying mock entry point");
-        vm.startBroadcast();
+        vm.startBroadcast(ANVIL_DEFAULT_ACCOUNT);
         EntryPoint entryPoint = new EntryPoint();
         // ERC20Mock erc20 = new ERC20Mock();
         vm.stopBroadcast();
