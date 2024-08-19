@@ -17,7 +17,7 @@ contract HelperConfig is Script {
     uint256 constant ZKSYNC_SEPLOLIA_CHAIN_ID = 300;
     uint256 constant LOCAL_CHAIN_ID = 31337;
     address constant BURN__WALLET = 0x9C8A2750E8814eDF52224a92bD61B4F596a94c17;
-    address constant ANVIL_DEFAULT_ACCOUNT = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address constant ANVIL_DEFAULT_ACCOUNT = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
 
     NetworkConfig public activeNetwork;
     mapping(uint256 chainId => NetworkConfig) public networkConfigs;
