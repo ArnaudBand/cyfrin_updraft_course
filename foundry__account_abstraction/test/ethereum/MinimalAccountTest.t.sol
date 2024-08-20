@@ -82,4 +82,23 @@ contract MinimalAccountTest is Test {
         // Assert
         assertEq(validationData, 0);
     }
+
+    function testValidationRevertWhenUserHasNotFunds() public {
+        // Arrange
+        bytes memory executeCallData = abi.encodeWithSelector(
+            MinimalAccount.execute.selector,
+            address(usdc), // address dest
+            0, // uint256 value
+            abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), INITIAL_BALANCE) // bytes calldata
+        );
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generateSignedPackedUserOp(executeCallData, helperConfig.getConfig());
+        bytes32 userOperationHash = IEntryPoint(helperConfig.getConfig().entryPoint).getUserOpHash(packedUserOp);
+        uint256 missingAccountFunds = 0;
+
+        // Act
+        vm.prank(helperConfig.getConfig().entryPoint);
+        vm.expectRevert(MinimalAccount.MinimalAccount__FailedToPayPreFund.selector);
+        minimalAccount.validateUserOp(packedUserOp, userOperationHash, missingAccountFunds);
+    }
 }
