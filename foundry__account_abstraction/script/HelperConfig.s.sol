@@ -41,10 +41,7 @@ contract HelperConfig is Script {
     }
 
     function getEthSepoliaConfig() public pure returns (NetworkConfig memory) {
-        return NetworkConfig({
-          entryPoint: 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789,
-          account: BURN__WALLET
-        });
+        return NetworkConfig({entryPoint: 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789, account: BURN__WALLET});
     }
 
     function getZkSyncSepoliaConfig() public pure returns (NetworkConfig memory) {
