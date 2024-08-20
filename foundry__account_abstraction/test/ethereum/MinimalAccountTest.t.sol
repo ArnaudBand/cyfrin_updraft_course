@@ -30,10 +30,11 @@ contract MinimalAccountTest is Test {
     }
 
     function testOwnerCanExecuteCommads() public {
+        vm.prank(minimalAccount.owner());
         minimalAccount.execute(
-            address(usdc), 0, abi.encodeWithSignature("mint(address,uint256)", address(this), INITIAL_BALANCE)
+            address(usdc), 0, abi.encodeWithSignature("mint(address,uint256)", address(minimalAccount), INITIAL_BALANCE)
         );
-        assertEq(usdc.balanceOf(address(this)), INITIAL_BALANCE);
+        assertEq(usdc.balanceOf(address(minimalAccount)), INITIAL_BALANCE);
     }
 
     function testNotOwnerCannotExecuteCommads() public {
