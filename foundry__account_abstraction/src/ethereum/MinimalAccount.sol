@@ -80,9 +80,9 @@ contract MinimalAccount is IAccount, Ownable {
     function _payPreFund(uint256 missingAccountFunds) internal {
         if (missingAccountFunds > 0) {
             (bool success,) = msg.sender.call{value: missingAccountFunds, gas: type(uint256).max}("");
-            if (!success) {
-                revert MinimalAccount__FailedToPayPreFund();
-            }
+            (success);
+        } else {
+            revert MinimalAccount__FailedToPayPreFund();
         }
     }
 
