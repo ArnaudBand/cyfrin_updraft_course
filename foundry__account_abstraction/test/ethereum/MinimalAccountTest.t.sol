@@ -101,4 +101,8 @@ contract MinimalAccountTest is Test {
         vm.expectRevert(MinimalAccount.MinimalAccount__FailedToPayPreFund.selector);
         minimalAccount.validateUserOp(packedUserOp, userOperationHash, missingAccountFunds);
     }
+
+    function testGetEntryPoint() public {
+        assertEq(minimalAccount.getEntryPoint(), helperConfig.getConfig().entryPoint);
+    }
 }
