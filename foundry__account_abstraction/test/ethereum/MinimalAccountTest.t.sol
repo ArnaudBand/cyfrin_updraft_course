@@ -53,8 +53,10 @@ contract MinimalAccountTest is Test {
             0, // uint256 value
             abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), INITIAL_BALANCE) // bytes calldata
         );
-        PackedUserOperation memory packedUserOp =
-            sendPackedUserOp.generateSignedPackedUserOp(executeCallData, helperConfig.getConfig());
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedPackedUserOp(
+            executeCallData, helperConfig.getConfig(), address(minimalAccount)
+        );
+
         bytes32 userOperationHash = IEntryPoint(helperConfig.getConfig().entryPoint).getUserOpHash(packedUserOp);
 
         // Act
@@ -72,8 +74,10 @@ contract MinimalAccountTest is Test {
             0, // uint256 value
             abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), INITIAL_BALANCE) // bytes calldata
         );
-        PackedUserOperation memory packedUserOp =
-            sendPackedUserOp.generateSignedPackedUserOp(executeCallData, helperConfig.getConfig());
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedPackedUserOp(
+            executeCallData, helperConfig.getConfig(), address(minimalAccount)
+        );
+
         bytes32 userOperationHash = IEntryPoint(helperConfig.getConfig().entryPoint).getUserOpHash(packedUserOp);
         uint256 missingAccountFunds = 10e18;
 
@@ -92,8 +96,10 @@ contract MinimalAccountTest is Test {
             0, // uint256 value
             abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), INITIAL_BALANCE) // bytes calldata
         );
-        PackedUserOperation memory packedUserOp =
-            sendPackedUserOp.generateSignedPackedUserOp(executeCallData, helperConfig.getConfig());
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedPackedUserOp(
+            executeCallData, helperConfig.getConfig(), address(minimalAccount)
+        );
+
         bytes32 userOperationHash = IEntryPoint(helperConfig.getConfig().entryPoint).getUserOpHash(packedUserOp);
         uint256 missingAccountFunds = 0;
 
@@ -105,5 +111,28 @@ contract MinimalAccountTest is Test {
 
     function testGetEntryPoint() public {
         assertEq(minimalAccount.getEntryPoint(), helperConfig.getConfig().entryPoint);
+    }
+
+    function testEntryPointCanExecuteCommads() public {
+        // Arrange
+        bytes memory executeCallData = abi.encodeWithSelector(
+            MinimalAccount.execute.selector,
+            address(usdc), // address dest
+            0, // uint256 value
+            abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), INITIAL_BALANCE) // bytes calldata
+        );
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedPackedUserOp(
+            executeCallData, helperConfig.getConfig(), address(minimalAccount)
+        );
+
+        vm.deal(address(minimalAccount), 1e18);
+        PackedUserOperation[] memory ops = new PackedUserOperation[](1);
+        ops[0] = packedUserOp;
+
+        vm.prank(randomUser);
+        IEntryPoint(helperConfig.getConfig().entryPoint).handleOps(ops, payable(randomUser));
+
+        // Assert
+        assertEq(usdc.balanceOf(address(minimalAccount)), INITIAL_BALANCE);
     }
 }
