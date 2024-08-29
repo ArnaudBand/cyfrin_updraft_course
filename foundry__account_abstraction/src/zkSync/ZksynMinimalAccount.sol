@@ -2,9 +2,15 @@
 pragma solidity 0.8.24;
 
 import {IAccount, ACCOUNT_VALIDATION_SUCCESS_MAGIC} from "foundry-era-contracts/contracts/interfaces/IAccount.sol";
-import {Transaction, MemoryTransactionHelper} from "foundry-era-contracts/contracts/libraries/MemoryTransactionHelper.sol";
+import {
+    Transaction, MemoryTransactionHelper
+} from "foundry-era-contracts/contracts/libraries/MemoryTransactionHelper.sol";
 import {SystemContractsCaller} from "foundry-era-contracts/contracts/libraries/SystemContractsCaller.sol";
-import {NONCE_HOLDER_SYSTEM_CONTRACT, BOOTLOADER_FORMAL_ADDRESS} from "foundry-era-contracts/contracts/Constants.sol";
+import {
+    NONCE_HOLDER_SYSTEM_CONTRACT,
+    BOOTLOADER_FORMAL_ADDRESS,
+    DEPLOYER_SYSTEM_CONTRACT
+} from "foundry-era-contracts/contracts/Constants.sol";
 import {INonceHolder} from "foundry-era-contracts/contracts/interfaces/INonceHolder.sol";
 import {Utils} from "foundry-era-contracts/contracts/libraries/Utils.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
@@ -28,19 +34,27 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * 8. The main node calls executeTransaction
  * 9. If a paymaster was used, the postTransaction is called
  */
-
 contract ZksyncMinimalAccount is IAccount, Ownable {
     using MemoryTransactionHelper for Transaction;
 
     // ERRORS
     error ZksyncMinimalAccount__NotEnoughBalanceToPayForTransaction();
     error ZksyncMinimalAccount__NotFromBootLoader();
+    error ZksyncMinimalAccount__NotFromBootLoaderOrOwner();
     error ZkMinimalAccount__ExecutionFailed();
+    error ZkMinimalAccount__TransactionFailed();
 
     // MODIFIERS
     modifier requireFromBootLoader() {
         if (msg.sender != BOOTLOADER_FORMAL_ADDRESS) {
             revert ZksyncMinimalAccount__NotFromBootLoader();
+        }
+        _;
+    }
+
+        modifier requireFromBootLoaderOrOwner() {
+        if (msg.sender != BOOTLOADER_FORMAL_ADDRESS && msg.sender != owner()) {
+            revert ZksyncMinimalAccount__NotFromBootLoaderOrOwner();
         }
         _;
     }
@@ -57,8 +71,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
      * @notice must validate the transaction (Check the transaction is valid)
      * @notice Check it the owner have enough balance to pay for the transaction
      */
-
-    function validateTransaction(bytes32 /*_txHash*/, bytes32 /*_suggestedSignedHash*/, Transaction memory _transaction)
+    function validateTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
         external
         payable
         requireFromBootLoader
@@ -71,10 +84,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
             uint32(gasleft()),
             address(NONCE_HOLDER_SYSTEM_CONTRACT),
             0,
-            abi.encodeCall(
-                INonceHolder.incrementMinNonceIfEquals,
-                _transaction.nonce
-            )
+            abi.encodeCall(INonceHolder.incrementMinNonceIfEquals, _transaction.nonce)
         );
 
         // Check for fee to pay
@@ -91,32 +101,41 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
         isSigned ? ACCOUNT_VALIDATION_SUCCESS_MAGIC : bytes4(0);
         return magic;
     }
-    
 
-    function executeTransaction(bytes32 /*_txHash*/, bytes32 /*_suggestedSignedHash*/, Transaction memory _transaction)
+    function executeTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
         external
         payable
+        requireFromBootLoaderOrOwner
     {
         address to = address(uint160(_transaction.to));
         uint128 value = Utils.safeCastToU128(_transaction.value);
         bytes memory data = _transaction.data;
-        bool success;
+        if (to == address(DEPLOYER_SYSTEM_CONTRACT)) {
+            uint32 gas = Utils.safeCastToU32(gasleft());
+            SystemContractsCaller.systemCallWithPropagatedRevert(gas, to, value, data);
+        } else {
+            bool success;
+            assembly {
+                success := call(gas(), to, value, add(data, 0x20), mload(data), 0, 0)
+            }
 
-        assembly {
-            success := call(gas(), to, value, add(data, 0x20), mload(data), 0, 0)
-        }
-
-        if (!success) {
-            revert ZkMinimalAccount__ExecutionFailed();
+            if (!success) {
+                revert ZkMinimalAccount__ExecutionFailed();
+            }
         }
     }
 
     function executeTransactionFromOutside(Transaction memory _transaction) external payable {}
 
-    function payForTransaction(bytes32 _txHash, bytes32 _suggestedSignedHash, Transaction memory _transaction)
+    function payForTransaction(bytes32 /*_txHash*/, bytes32 /*_suggestedSignedHash*/, Transaction memory _transaction)
         external
         payable
-    {}
+    {
+        bool success = _transaction.payToTheBootloader();
+        if (!success) {
+            revert ZkMinimalAccount__TransactionFailed();
+        }
+    }
 
     function prepareForPaymaster(bytes32 _txHash, bytes32 _possibleSignedHash, Transaction memory _transaction)
         external
