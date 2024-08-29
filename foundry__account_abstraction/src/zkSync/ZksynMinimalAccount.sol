@@ -6,6 +6,7 @@ import {Transaction, MemoryTransactionHelper} from "foundry-era-contracts/contra
 import {SystemContractsCaller} from "foundry-era-contracts/contracts/libraries/SystemContractsCaller.sol";
 import {NONCE_HOLDER_SYSTEM_CONTRACT, BOOTLOADER_FORMAL_ADDRESS} from "foundry-era-contracts/contracts/Constants.sol";
 import {INonceHolder} from "foundry-era-contracts/contracts/interfaces/INonceHolder.sol";
+import {Utils} from "foundry-era-contracts/contracts/libraries/Utils.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -34,6 +35,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
     // ERRORS
     error ZksyncMinimalAccount__NotEnoughBalanceToPayForTransaction();
     error ZksyncMinimalAccount__NotFromBootLoader();
+    error ZkMinimalAccount__ExecutionFailed();
 
     // MODIFIERS
     modifier requireFromBootLoader() {
@@ -91,10 +93,23 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
     }
     
 
-    function executeTransaction(bytes32 _txHash, bytes32 _suggestedSignedHash, Transaction memory _transaction)
+    function executeTransaction(bytes32 /*_txHash*/, bytes32 /*_suggestedSignedHash*/, Transaction memory _transaction)
         external
         payable
-    {}
+    {
+        address to = address(uint160(_transaction.to));
+        uint128 value = Utils.safeCastToU128(_transaction.value);
+        bytes memory data = _transaction.data;
+        bool success;
+
+        assembly {
+            success := call(gas(), to, value, add(data, 0x20), mload(data), 0, 0)
+        }
+
+        if (!success) {
+            revert ZkMinimalAccount__ExecutionFailed();
+        }
+    }
 
     function executeTransactionFromOutside(Transaction memory _transaction) external payable {}
 
