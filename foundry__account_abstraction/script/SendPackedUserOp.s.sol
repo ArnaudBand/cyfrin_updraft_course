@@ -16,16 +16,18 @@ contract SendPackedUserOp is Script {
         HelperConfig config = new HelperConfig();
         address dest = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
         uint256 value = 0;
-        bytes memory functionData = abi.encodeWithSelector(IERC20.approve.selector, 0x9C8A2750E8814eDF52224a92bD61B4F596a94c17, 1e18);
-        bytes memory executeCalldata = abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
-        PackedUserOperation memory userOp = generateSignedPackedUserOp(executeCalldata, config.getConfig(), 0x85bde0b72E5c8Fb08aeF3dc57Ba84A0fa03b9a31);
+        bytes memory functionData =
+            abi.encodeWithSelector(IERC20.approve.selector, 0x9C8A2750E8814eDF52224a92bD61B4F596a94c17, 1e18);
+        bytes memory executeCalldata =
+            abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
+        PackedUserOperation memory userOp =
+            generateSignedPackedUserOp(executeCalldata, config.getConfig(), 0x85bde0b72E5c8Fb08aeF3dc57Ba84A0fa03b9a31);
         PackedUserOperation[] memory ops = new PackedUserOperation[](1);
         ops[0] = userOp;
 
         vm.startBroadcast();
         IEntryPoint(config.getConfig().entryPoint).handleOps(ops, payable(config.getConfig().account));
         vm.stopBroadcast();
-
     }
 
     function generateSignedPackedUserOp(
@@ -34,7 +36,7 @@ contract SendPackedUserOp is Script {
         address minimalAccount
     ) public view returns (PackedUserOperation memory) {
         // 1. Genreate the unsigned packed user operation
-        uint256 nonce = vm.getNonce(minimalAccount) -1;
+        uint256 nonce = vm.getNonce(minimalAccount) - 1;
         PackedUserOperation memory userOp = _generateUnsignedPackedUserOp(callData, minimalAccount, nonce);
         // 2. Get the hash of the packed user operation
         bytes32 userOpHash = IEntryPoint(config.entryPoint).getUserOpHash(userOp);
