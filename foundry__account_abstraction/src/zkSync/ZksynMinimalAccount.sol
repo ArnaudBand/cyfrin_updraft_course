@@ -3,6 +3,9 @@ pragma solidity 0.8.24;
 
 import {IAccount} from "foundry-era-contracts/contracts/interfaces/IAccount.sol";
 import {Transaction} from "foundry-era-contracts/contracts/libraries/MemoryTransactionHelper.sol";
+import {SystemContractsCaller} from "foundry-era-contracts/contracts/libraries/SystemContractsCaller.sol";
+import {NONCE_HOLDER_SYSTEM_CONTRACT} from "foundry-era-contracts/contracts/Constants.sol";
+import {INonceHolder} from "foundry-era-contracts/contracts/interfaces/INonceHolder.sol";
 
 /**
  * Lifecycle of a type 113 (0x71) transaction
@@ -23,11 +26,35 @@ import {Transaction} from "foundry-era-contracts/contracts/libraries/MemoryTrans
  */
 
 contract ZksyncMinimalAccount is IAccount {
-    function validateTransaction(bytes32 _txHash, bytes32 _suggestedSignedHash, Transaction memory _transaction)
+
+    // EXTERNAL FUNCTIONS
+
+    /**
+     * @dev Validates a transaction
+     * @notice must increase the nonce
+     * @notice must validate the transation (Check the owner signed the transaction)
+     * @notice must validate the transaction (Check the transaction is valid)
+     * @notice Check it the owner have enough balance to pay for the transaction
+     */
+
+    function validateTransaction(bytes32 /*_txHash*/, bytes32 /*_suggestedSignedHash*/, Transaction memory _transaction)
         external
         payable
         returns (bytes4 magic)
-    {}
+    {
+        // Call NonceHolder
+        // Increase the nonce
+        // Cal(z,x,v) -> call system contract
+        SystemContractsCaller.systemCallWithPropagatedRevert(
+            uint32(gasleft()),
+            address(NONCE_HOLDER_SYSTEM_CONTRACT),
+            0,
+            abi.encodeCall(
+                INonceHolder.incrementMinNonceIfEquals,
+                _transaction.nonce
+            )
+        );
+    }
     
 
     function executeTransaction(bytes32 _txHash, bytes32 _suggestedSignedHash, Transaction memory _transaction)
