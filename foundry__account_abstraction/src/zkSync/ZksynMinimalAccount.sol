@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {IAccount} from "foundry-era-contracts/contracts/interfaces/IAccount.sol";
-import {Transaction} from "foundry-era-contracts/contracts/libraries/MemoryTransactionHelper.sol";
+import {IAccount, ACCOUNT_VALIDATION_SUCCESS_MAGIC} from "foundry-era-contracts/contracts/interfaces/IAccount.sol";
+import {Transaction, MemoryTransactionHelper} from "foundry-era-contracts/contracts/libraries/MemoryTransactionHelper.sol";
 import {SystemContractsCaller} from "foundry-era-contracts/contracts/libraries/SystemContractsCaller.sol";
-import {NONCE_HOLDER_SYSTEM_CONTRACT} from "foundry-era-contracts/contracts/Constants.sol";
+import {NONCE_HOLDER_SYSTEM_CONTRACT, BOOTLOADER_FORMAL_ADDRESS} from "foundry-era-contracts/contracts/Constants.sol";
 import {INonceHolder} from "foundry-era-contracts/contracts/interfaces/INonceHolder.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * Lifecycle of a type 113 (0x71) transaction
@@ -25,7 +28,23 @@ import {INonceHolder} from "foundry-era-contracts/contracts/interfaces/INonceHol
  * 9. If a paymaster was used, the postTransaction is called
  */
 
-contract ZksyncMinimalAccount is IAccount {
+contract ZksyncMinimalAccount is IAccount, Ownable {
+    using MemoryTransactionHelper for Transaction;
+
+    // ERRORS
+    error ZksyncMinimalAccount__NotEnoughBalanceToPayForTransaction();
+    error ZksyncMinimalAccount__NotFromBootLoader();
+
+    // MODIFIERS
+    modifier requireFromBootLoader() {
+        if (msg.sender != BOOTLOADER_FORMAL_ADDRESS) {
+            revert ZksyncMinimalAccount__NotFromBootLoader();
+        }
+        _;
+    }
+
+    // CONSTRUCTOR
+    constructor() Ownable(msg.sender) {}
 
     // EXTERNAL FUNCTIONS
 
@@ -40,6 +59,7 @@ contract ZksyncMinimalAccount is IAccount {
     function validateTransaction(bytes32 /*_txHash*/, bytes32 /*_suggestedSignedHash*/, Transaction memory _transaction)
         external
         payable
+        requireFromBootLoader
         returns (bytes4 magic)
     {
         // Call NonceHolder
@@ -54,6 +74,20 @@ contract ZksyncMinimalAccount is IAccount {
                 _transaction.nonce
             )
         );
+
+        // Check for fee to pay
+        uint256 totalRequiredBalance = _transaction.totalRequiredBalance();
+        if (totalRequiredBalance > address(this).balance) {
+            revert ZksyncMinimalAccount__NotEnoughBalanceToPayForTransaction();
+        }
+        // Check for signature
+        bytes32 txHash = _transaction.encodeHash();
+        bytes32 convertHash = MessageHashUtils.toEthSignedMessageHash(txHash);
+        address signer = ECDSA.recover(convertHash, _transaction.signature);
+        bool isSigned = signer == owner();
+        // return magic
+        isSigned ? ACCOUNT_VALIDATION_SUCCESS_MAGIC : bytes4(0);
+        return magic;
     }
     
 
