@@ -62,6 +62,9 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
     // CONSTRUCTOR
     constructor() Ownable(msg.sender) {}
 
+    // FALLBACK
+    receive() external payable {}
+
     // EXTERNAL FUNCTIONS
 
     /**
