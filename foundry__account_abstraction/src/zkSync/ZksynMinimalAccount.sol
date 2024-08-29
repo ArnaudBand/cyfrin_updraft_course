@@ -77,29 +77,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
         requireFromBootLoader
         returns (bytes4 magic)
     {
-        // Call NonceHolder
-        // Increase the nonce
-        // Cal(z,x,v) -> call system contract
-        SystemContractsCaller.systemCallWithPropagatedRevert(
-            uint32(gasleft()),
-            address(NONCE_HOLDER_SYSTEM_CONTRACT),
-            0,
-            abi.encodeCall(INonceHolder.incrementMinNonceIfEquals, _transaction.nonce)
-        );
-
-        // Check for fee to pay
-        uint256 totalRequiredBalance = _transaction.totalRequiredBalance();
-        if (totalRequiredBalance > address(this).balance) {
-            revert ZksyncMinimalAccount__NotEnoughBalanceToPayForTransaction();
-        }
-        // Check for signature
-        bytes32 txHash = _transaction.encodeHash();
-        bytes32 convertHash = MessageHashUtils.toEthSignedMessageHash(txHash);
-        address signer = ECDSA.recover(convertHash, _transaction.signature);
-        bool isSigned = signer == owner();
-        // return magic
-        isSigned ? ACCOUNT_VALIDATION_SUCCESS_MAGIC : bytes4(0);
-        return magic;
+        return _validateTransaction(_transaction);
     }
 
     function executeTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
@@ -141,4 +119,32 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
         external
         payable
     {}
+
+    // INTERNAL FUNCTIONS
+
+    function _validateTransaction(Transaction memory _transaction) internal returns (bytes4 magic) {
+                // Call NonceHolder
+        // Increase the nonce
+        // Cal(z,x,v) -> call system contract
+        SystemContractsCaller.systemCallWithPropagatedRevert(
+            uint32(gasleft()),
+            address(NONCE_HOLDER_SYSTEM_CONTRACT),
+            0,
+            abi.encodeCall(INonceHolder.incrementMinNonceIfEquals, _transaction.nonce)
+        );
+
+        // Check for fee to pay
+        uint256 totalRequiredBalance = _transaction.totalRequiredBalance();
+        if (totalRequiredBalance > address(this).balance) {
+            revert ZksyncMinimalAccount__NotEnoughBalanceToPayForTransaction();
+        }
+        // Check for signature
+        bytes32 txHash = _transaction.encodeHash();
+        bytes32 convertHash = MessageHashUtils.toEthSignedMessageHash(txHash);
+        address signer = ECDSA.recover(convertHash, _transaction.signature);
+        bool isSigned = signer == owner();
+        // return magic
+        isSigned ? ACCOUNT_VALIDATION_SUCCESS_MAGIC : bytes4(0);
+        return magic;
+    }
 }
