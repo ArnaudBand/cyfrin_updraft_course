@@ -52,7 +52,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
         _;
     }
 
-        modifier requireFromBootLoaderOrOwner() {
+    modifier requireFromBootLoaderOrOwner() {
         if (msg.sender != BOOTLOADER_FORMAL_ADDRESS && msg.sender != owner()) {
             revert ZksyncMinimalAccount__NotFromBootLoaderOrOwner();
         }
@@ -88,7 +88,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
         payable
         requireFromBootLoaderOrOwner
     {
-       _executeTransaction(_transaction);
+        _executeTransaction(_transaction);
     }
 
     function executeTransactionFromOutside(Transaction memory _transaction) external payable {
@@ -96,7 +96,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
         _executeTransaction(_transaction);
     }
 
-    function payForTransaction(bytes32 /*_txHash*/, bytes32 /*_suggestedSignedHash*/, Transaction memory _transaction)
+    function payForTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
         external
         payable
     {
@@ -114,7 +114,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
     // INTERNAL FUNCTIONS
 
     function _validateTransaction(Transaction memory _transaction) internal returns (bytes4 magic) {
-                // Call NonceHolder
+        // Call NonceHolder
         // Increase the nonce
         // Cal(z,x,v) -> call system contract
         SystemContractsCaller.systemCallWithPropagatedRevert(
@@ -140,7 +140,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
     }
 
     function _executeTransaction(Transaction memory _transaction) internal {
-         address to = address(uint160(_transaction.to));
+        address to = address(uint160(_transaction.to));
         uint128 value = Utils.safeCastToU128(_transaction.value);
         bytes memory data = _transaction.data;
         if (to == address(DEPLOYER_SYSTEM_CONTRACT)) {
