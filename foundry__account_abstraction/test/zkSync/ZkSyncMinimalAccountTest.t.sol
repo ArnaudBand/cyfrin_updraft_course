@@ -10,7 +10,7 @@ contract ZkSyncMinimalAccountTest is Test {
     ZksyncMinimalAccount minimal;
     ERC20Mock usdc;
 
-    uint256 constant USDC_TOTAL_SUPPLY = 1e18;
+    uint256 constant AMOUNT = 1e18;
     bytes32 constant EMPTY_BYTES = bytes32(0);
 
     function setUp() public {
@@ -26,13 +26,13 @@ contract ZkSyncMinimalAccountTest is Test {
             113,
             address(usdc),
             0,
-            abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimal), USDC_TOTAL_SUPPLY)
+            abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimal), AMOUNT)
         );
 
         vm.prank(minimal.owner());
         minimal.executeTransaction(EMPTY_BYTES, EMPTY_BYTES, transaction);
 
-        assertEq(usdc.balanceOf(address(minimal)), USDC_TOTAL_SUPPLY);
+        assertEq(usdc.balanceOf(address(minimal)), AMOUNT);
     }
 
     // INTERNAL FUNCTIONS
@@ -46,7 +46,7 @@ contract ZkSyncMinimalAccountTest is Test {
         uint256 nonce = vm.getNonce(address(minimal));
         bytes32[] memory factoryDeps = new bytes32[](0);
         return Transaction({
-            txType: transactionType,
+            txType: transactionType, // type 113 (0x71).
             from: uint256(uint160(from)),
             to: uint256(uint160(to)),
             gasLimit: 16777216,
