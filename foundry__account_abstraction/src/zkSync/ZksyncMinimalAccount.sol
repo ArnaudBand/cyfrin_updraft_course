@@ -135,7 +135,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
         address signer = ECDSA.recover(convertHash, _transaction.signature);
         bool isSigned = signer == owner();
         // return magic
-        isSigned ? ACCOUNT_VALIDATION_SUCCESS_MAGIC : bytes4(0);
+        isSigned ? magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC : magic = bytes4(0);
         return magic;
     }
 
