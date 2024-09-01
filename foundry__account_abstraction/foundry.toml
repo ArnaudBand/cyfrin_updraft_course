@@ -7,6 +7,7 @@ remappings = [
   'account-abstraction/=lib/account-abstraction/contracts/',
   '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/',
   'foundry-era-contracts/contracts=lib/foundry-era-contracts/src/system-contracts/contracts',
+  'foundry-devops/contracts=lib/foundry-devops/src',
   'forge-std/=lib/forge-std/src/'
 ]
 
