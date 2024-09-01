@@ -92,7 +92,10 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
     }
 
     function executeTransactionFromOutside(Transaction memory _transaction) external payable {
-        _validateTransaction(_transaction);
+        bytes4 magic = _validateTransaction(_transaction);
+        if (magic != ACCOUNT_VALIDATION_SUCCESS_MAGIC) {
+            revert ZkMinimalAccount__TransactionFailed();
+        }
         _executeTransaction(_transaction);
     }
 
@@ -131,8 +134,7 @@ contract ZksyncMinimalAccount is IAccount, Ownable {
         }
         // Check for signature
         bytes32 txHash = _transaction.encodeHash();
-        bytes32 convertHash = MessageHashUtils.toEthSignedMessageHash(txHash);
-        address signer = ECDSA.recover(convertHash, _transaction.signature);
+        address signer = ECDSA.recover(txHash, _transaction.signature);
         bool isSigned = signer == owner();
         // return magic
         isSigned ? magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC : magic = bytes4(0);
