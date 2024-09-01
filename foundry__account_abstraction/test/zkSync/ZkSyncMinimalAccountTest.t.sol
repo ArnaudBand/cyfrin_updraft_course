@@ -4,6 +4,7 @@ pragma solidity 0.8.24;
 import {Test, console2} from "forge-std/Test.sol";
 import {ZksyncMinimalAccount} from "src/zkSync/ZksyncMinimalAccount.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
+import {ZkSyncChainChecker} from "foundry-devops/contracts/ZkSyncChainChecker.sol";
 
 // Era Imports
 import {
@@ -18,7 +19,7 @@ import {ACCOUNT_VALIDATION_SUCCESS_MAGIC} from
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 
-contract ZkMinimalAccountTest is Test {
+contract ZkMinimalAccountTest is Test, ZkSyncChainChecker {
     using MessageHashUtils for bytes32;
 
     ZksyncMinimalAccount minimalAccount;
@@ -54,7 +55,7 @@ contract ZkMinimalAccountTest is Test {
     }
 
     // You'll also need --system-mode=true to run this test
-    function testZkValidateTransaction() public {
+    function testZkValidateTransaction() public onlyZkSync {
         // Arrange
         address dest = address(usdc);
         uint256 value = 0;
@@ -75,15 +76,16 @@ contract ZkMinimalAccountTest is Test {
                                 HELPERS
     //////////////////////////////////////////////////////////////*/
     function _signTransaction(Transaction memory transaction) internal view returns (Transaction memory) {
+        // Sign the transaction with the default key
         bytes32 unsignedTransactionHash = MemoryTransactionHelper.encodeHash(transaction);
-        bytes32 digest = unsignedTransactionHash.toEthSignedMessageHash();
         uint8 v;
         bytes32 r;
         bytes32 s;
         uint256 ANVIL_DEFAULT_KEY = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
-        (v, r, s) = vm.sign(ANVIL_DEFAULT_KEY, digest);
+        (v, r, s) = vm.sign(ANVIL_DEFAULT_KEY, unsignedTransactionHash);
         Transaction memory signedTransaction = transaction;
         signedTransaction.signature = abi.encodePacked(r, s, v);
+        // Return the signed transaction
         return signedTransaction;
     }
 
