@@ -1,0 +1,30 @@
+{
+  "name": "foundry__account_abstraction",
+  "version": "1.0.0",
+  "description": "1. Create a basic AA on Ethereum 2. Create a basic AA Zksync 3. Deploy, and send a user UserOp / transanction through them",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "encryptKey": "ts-node ts-scripts/EncryptKey.ts",
+    "deploy": "ts-node ts-scripts/DeployZksyncMinimalAccount.ts",
+    "sendTx": "ts-node ts-scripts/SendAATx.ts",
+    "compile": "forge build --zksync"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "fs-extra": "^11.2.0",
+    "typescript": "^5.5.4",
+    "zksync-ethers": "^6.12.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
