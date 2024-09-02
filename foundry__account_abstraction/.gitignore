@@ -13,3 +13,6 @@ docs/
 # Dotenv file
 .env
 
+
+# Ignore all files in the root of the project
+node_modules/
