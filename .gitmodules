@@ -97,3 +97,6 @@
 [submodule "foundry__account_abstraction/lib/foundry-devops"]
 	path = foundry__account_abstraction/lib/foundry-devops
 	url = https://github.com/Cyfrin/foundry-devops
+[submodule "foundry__dao/lib/forge-std"]
+	path = foundry__dao/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
