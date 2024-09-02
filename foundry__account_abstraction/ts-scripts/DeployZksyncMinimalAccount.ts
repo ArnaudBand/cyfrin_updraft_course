@@ -4,9 +4,6 @@ import * as ethers from "ethers"
 import "dotenv/config"
 
 async function main() {
-    // Local net - comment to unuse
-    // let provider = new Provider("http://127.0.0.1:8011")
-    // let wallet = new Wallet(process.env.PRIVATE_KEY!)
 
     // Sepolia - uncomment to use
     let provider = new Provider(process.env.ZKSYNC_SEPOLIA_RPC_URL!)
