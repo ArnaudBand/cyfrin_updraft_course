@@ -100,3 +100,6 @@
 [submodule "foundry__dao/lib/forge-std"]
 	path = foundry__dao/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "foundry__dao/lib/openzeppelin-contracts"]
+	path = foundry__dao/lib/openzeppelin-contracts
+	url = https://github.com/openzeppelin/openzeppelin-contracts
