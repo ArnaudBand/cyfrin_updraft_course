@@ -73,6 +73,7 @@ async function main() {
         from: wallet.address,
     })
     const gasPrice = (await provider.getFeeData()).gasPrice!
+    console.log(`Gas limit: ${gasLimit}, Gas price: ${gasPrice}`)
 
     aaTx = {
         ...aaTx,
