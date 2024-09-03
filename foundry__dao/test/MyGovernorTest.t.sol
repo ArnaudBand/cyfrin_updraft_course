@@ -25,6 +25,10 @@ contract MyGovernorTest is Test {
 
     uint256 public constant MINI_DELAY = 3600; // 1 hour - after proposal is approved
     uint256 public constant VOTING_DELAY = 1; // 1 block
+    uint256 public constant QUORUM_PERCENTAGE = 4; // Need 4% of voters to pass
+    uint256 public constant VOTING_PERIOD = 50400; // This is how long voting lasts
+
+    address public constant VOTER = address(1);
 
     function setUp() public {
         token = new GovernToken();
@@ -81,5 +85,32 @@ contract MyGovernorTest is Test {
         vm.roll(block.number + VOTING_DELAY + 1);
 
         assertEq(uint256(governor.state(proposalId)), 1);
+    }
+
+    function testGovernanceCanVoteYesAndStateChangeToDefeated() public {
+        string memory description = "Update Box";
+        bytes memory data = abi.encodeWithSignature("store(uint256)", 42);
+
+        values.push(0);
+        calldatas.push(data);
+        targets.push(address(box));
+
+        // 1. Propose to the DAO
+        uint256 proposalId = governor.propose(targets, values, calldatas, description);
+
+        vm.warp(block.timestamp + VOTING_DELAY + 1);
+        vm.roll(block.number + VOTING_DELAY + 1);
+
+        // 2. Vote
+        string memory reason = "I like 42";
+        uint8 vote = 1;
+        vm.prank(VOTER);
+        governor.castVoteWithReason(proposalId, vote, reason);
+
+        vm.warp(block.timestamp + VOTING_PERIOD + 1);
+        vm.roll(block.number + VOTING_PERIOD + 1);
+
+        console.log("Proposal State: ", uint256(governor.state(proposalId)));
+        assertEq(uint256(governor.state(proposalId)), 3);
     }
 }
