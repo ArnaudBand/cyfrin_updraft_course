@@ -20,6 +20,9 @@ contract MyGovernorTest is Test {
 
   address[] public proposers;
   address[] public executors;
+  uint256[] public values;
+  bytes[] public calldatas;
+  address[] public targets;
 
   uint256 public constant MINI_DELAY = 3600; // 1 hour - after proposal is approved
 
@@ -48,5 +51,18 @@ contract MyGovernorTest is Test {
     function testCanUpdateBoxWithoutGovernace() public {
         vm.expectRevert();
         box.store(42);
+    }
+
+    function testGovernanceUpdateProposalState() public {
+      string memory description = "Update Box";
+      bytes memory data = abi.encodeWithSignature("store(uint256)", 42);
+
+      values.push(0);
+      calldatas.push(data);
+      targets.push(address(box));
+
+      // 1. Propose to the DAO
+      uint256 proposalId = governor.propose(targets, values, calldatas, description);
+      assertEq(uint256(governor.state(proposalId)), 0);
     }
 }
