@@ -36,6 +36,7 @@ contract MyGovernorTest is Test {
 
         vm.startBroadcast(USER);
         token.delegate(USER);
+        console.log('The balance of USER',token.balanceOf(USER));
         timelock = new TimeLock(MINI_DELAY, proposers, executors);
         governor = new MyGovernor(token, timelock);
 
@@ -97,6 +98,7 @@ contract MyGovernorTest is Test {
 
         // 1. Propose to the DAO
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
+        console.log('Proposal Id:', proposalId);
 
         vm.warp(block.timestamp + VOTING_DELAY + 1);
         vm.roll(block.number + VOTING_DELAY + 1);
@@ -112,5 +114,50 @@ contract MyGovernorTest is Test {
 
         console.log("Proposal State: ", uint256(governor.state(proposalId)));
         assertEq(uint256(governor.state(proposalId)), 3);
+    }
+
+     function testGovernanceUpdatesBox() public {
+        uint256 valueToStore = 777;
+        string memory description = "Store 1 in Box";
+        bytes memory encodedFunctionCall = abi.encodeWithSignature("store(uint256)", valueToStore);
+
+        targets.push(address(box));
+        values.push(0);
+        calldatas.push(encodedFunctionCall);
+        // 1. Propose to the DAO
+        vm.prank(USER);
+        uint256 proposalId = governor.propose(targets, values, calldatas, description);
+        console.log('Proposal Id:', proposalId);
+
+        console.log("Proposal State:", uint256(governor.state(proposalId)));
+
+
+        vm.warp(block.timestamp + VOTING_DELAY + 1);
+        vm.roll(block.number + VOTING_DELAY + 1);
+
+        console.log("Proposal State:", uint256(governor.state(proposalId)));
+
+        // 2. Vote
+        string memory reason = "I like 777";
+        // 0 = Against, 1 = For, 2 = Abstain for this example
+        uint8 voteWay = 1;
+        vm.prank(USER);
+        governor.castVoteWithReason(proposalId, voteWay, reason);
+
+        vm.warp(block.timestamp + VOTING_PERIOD + 1);
+        vm.roll(block.number + VOTING_PERIOD + 1);
+
+        console.log("Proposal State:", uint256(governor.state(proposalId)));
+
+        // 3. Queue
+        bytes32 descriptionHash = keccak256(abi.encodePacked(description));
+        governor.queue(targets, values, calldatas, descriptionHash);
+        vm.roll(block.number + MINI_DELAY + 1);
+        vm.warp(block.timestamp + MINI_DELAY + 1);
+
+        // 4. Execute
+        governor.execute(targets, values, calldatas, descriptionHash);
+
+        assert(box.getNumber() == valueToStore);
     }
 }
